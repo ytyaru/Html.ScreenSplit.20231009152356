@@ -1,0 +1,52 @@
+# 画面分割
+
+　HTMLで本のように段で分割したいことがある。通常はCSSの`column-count:2`などで対応する。ただ、スクロール表示するとき、位置ずれが発生して見切れてしまう。なんとかJavaScriptで計算したのが以下。それでも微妙に見切れてしまったり、スクロール位置がずれてしまう。
+
+* https://github.com/ytyaru/Html.Responsive.FontSize.20230412115805
+
+　そこで別のアプローチを試みるのが本件である。画面に表示するHTML要素のサイズを固定し、その中に収まる量のコンテンツを入れるというアプローチを模索したい。
+
+　とりあえずサイズ内に収まるコンテンツ量の計算については対象外とする。あくまで画面全体のサイズを取得し、それを横２または縦２で分割し、サイズを固定するまでが対象。
+
+　ブラウザをリサイズしたときは再計算が必要になる。
+
+```html
+<div class="screen vertical|horizontal">
+    <div class="inner-screen"></div>
+    <div class="splitter"></div>
+    <div class="inner-screen"></div>
+</div>
+```
+```css
+screen {
+    inline-size: 100%;
+    block-size: 100%;
+    font-size: var(--font-size);
+    letter-spacing: var(--letter-spacing);
+    line-height: var(--line-height);
+    margin:0; padding:0;
+    writing-mode: var(--writing-mode);
+    text-orientation: var(--text-orientation);
+    text-decoration: var(--text-orientation);
+}
+inner-screen {
+    inline-size: 
+    block-size: 
+}
+splitter {
+    inline-size: 100%;
+    block-size: 1px;
+}
+```
+
+```javascript
+// 画面分割
+screenSplitter.vertical(2)
+screenSplitter.horizontal(2)
+screenSplitter.split({target:`body`, count:2, splitter:true, dir:vertical/horizontal})
+screenSplitter.resize()
+
+// 分割要素の取得
+screenSplitter.screens()
+```
+
