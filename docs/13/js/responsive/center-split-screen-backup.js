@@ -1,5 +1,5 @@
 class CenterSplitScreen {
-    #defaultOptions = { 'count':0, 'writingMode':'horizontal', 'hasSplitter':true, 'lineEm':40, 'paddingEm':0.5 }
+    #defaultOptions = { 'count':2, 'writingMode':'horizontal', 'hasSplitter':true, 'lineEm':40, 'paddingEm':0.5 }
     make(options={}) {
         deepCopy(this.#defaultOptions).then(obj=>{
             this.options = {...obj, ...options}

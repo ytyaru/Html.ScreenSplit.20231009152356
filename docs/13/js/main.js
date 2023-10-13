@@ -1,5 +1,6 @@
-window.addEventListener('DOMContentLoaded', (event) => {
+window.addEventListener('DOMContentLoaded', async(event) => {
     console.log('DOMContentLoaded!!');
+    /*
     centerSplitScreen.make()
     centerSplitScreen.make()
     centerSplitScreen.make({'count':1})
@@ -9,9 +10,20 @@ window.addEventListener('DOMContentLoaded', (event) => {
     centerSplitScreen.make({'hasSplitter':false})
     centerSplitScreen.make({'hasSplitter':false, 'writingMode':'vertical'})
     centerSplitScreen.make({'hasSplitter':true, 'writingMode':'vertical'})
+    centerSplitScreen.make({'count':0, 'writingMode':'vertical'})
+    */
+    centerSplitScreen.make()
+    centerSplitScreen.make({'writingMode':'vertical'})
+//    centerSplitScreen.make({'count':0})
+//    centerSplitScreen.make({'count':0, 'writingMode':'vertical'})
+    window.addEventListener('resize', debounce((e)=>{centerSplitScreen.resize()},300))
+
+    //await TextBlock.fromUrl('/tmp/work/Html.ScreenSplit.20231009152356/docs/13/txt/manuscript.txt')
+    const blocks = await TextBlock.fromUrl('txt/manuscript.txt')
+    console.log(blocks)
+    document.querySelector('.inner-screen').innerHTML =  blocks.map(block=>paragraph.parse(block)).join('')
     /*
     */
-    window.addEventListener('resize', debounce((e)=>{centerSplitScreen.resize()},300))
     /*
     */
     /*

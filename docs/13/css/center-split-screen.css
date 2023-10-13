@@ -21,6 +21,7 @@
     --splitter-text-decoration: overline; /* underline */
     --title-font-family: 'IPAゴシック';
     --body-font-family: 'IPA明朝';
+    --background-color: #FFFFFF;
 }
 body {
     margin:0; padding:0;
@@ -30,7 +31,7 @@ body {
     text-orientation: var(--text-orientation);
     text-decoration: var(--text-orientation);
     font-family: var(--body-font-family);
-    background-color: #000000;
+    background-color: var(--background-color);
 }
 h1,h2,h3,h4,h5,h6 {
     font-family: var(--title-font-family);
