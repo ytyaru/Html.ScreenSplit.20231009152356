@@ -26,6 +26,14 @@ class FitText {
         this.logs[size] = [] // {'blockStartIndex':0, 'blockEndIndex':0, 'html':''}
 
         Array.from(document.querySelectorAll('.inner-screen')).map(screen=>screen.style.visibility='hidden')
+        const screen = document.querySelector('.inner-screen')
+        for (let i=0; i<this.blocks.length; i++) {
+            const [endIndex, html] = this.#getRangedBlockIndex(screen, startIndex)
+            this.logs[size].push({'blockStartIndex':startIndex, 'blockEndIndex':endIndex, 'html':html})
+            startIndex = endIndex + 1
+            i = endIndex
+        }
+        /*
         for (let screen of document.querySelectorAll('.inner-screen')) {
             for (let i=0; i<this.blocks.length; i++) {
                 const [endIndex, html] = this.#getRangedBlockIndex(screen, startIndex)
@@ -34,6 +42,7 @@ class FitText {
                 i = endIndex
             }
         }
+        */
         Array.from(document.querySelectorAll('.inner-screen')).map(screen=>screen.style.visibility='visible')
         console.log(this.logs)
     }
@@ -63,14 +72,14 @@ class FitText {
         document.body.appendChild(el)
         */
         for (let i=startIndex; i<this.blocks.length; i++) {
-            console.log(i, this.blocks[i])
+            //console.log(i, this.blocks[i])
 //            html += paragraph.parse(this.blocks[i])
             const blockHtml = paragraph.parse(this.blocks[i])
             tryHtml += blockHtml
 //            el.innerHTML = html
             el.innerHTML = tryHtml
             //console.log(i, this.blocks[i], html)
-            console.log(i, this.blocks[i], tryHtml)
+            //console.log(i, this.blocks[i], tryHtml)
             const rect = el.getBoundingClientRect()
 
             //console.log(screen.clientWidth, screen.clientHeight, el.clientWidth, el.clientHeight)
