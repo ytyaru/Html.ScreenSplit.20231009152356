@@ -28,6 +28,12 @@ window.addEventListener('DOMContentLoaded', async(event) => {
         fitText.calc()
     },300))
 
+    performance.mark('TextBlock.load-start')
+    await TextBlock.load('txt/manuscript.txt')
+    performance.mark('TextBlock.load-end')
+    performance.measure('TextBlock.load', 'TextBlock.load-start', 'TextBlock.load-end')
+    console.log(performance.getEntriesByName('TextBlock.load')[0])
+    /*
     performance.mark('TextBlock.fromUrl-start')
     //const blocks = await TextBlock.fromUrl('txt/manuscript.txt')
     const blocks = await TextBlock.fromUrl('txt/large.txt')
@@ -36,7 +42,8 @@ window.addEventListener('DOMContentLoaded', async(event) => {
     console.log(performance.getEntriesByName('TextBlock.fromUrl')[0])
 //    console.log(blocks)
     //document.querySelector('.inner-screen').innerHTML = blocks.map(block=>paragraph.parse(block)).join('')
-    
+    */
+
     performance.mark('fitText.set-start')
     fitText.set(blocks)
     performance.mark('fitText.set-end')

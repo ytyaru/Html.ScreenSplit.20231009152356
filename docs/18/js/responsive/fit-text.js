@@ -7,6 +7,9 @@ class FitText {
     }
     set(blocks) { this.blocks = blocks }
     #screenCount() { return Array.from(document.querySelectorAll('#screen .inner-screen')).length }
+
+    const iter = await TextBlock.fromUrlIter(url, withIndex=false)
+    iter.next()
     next() { this.pager.next() }
     prev() { this.pager.prev() }
     calc() {
@@ -18,6 +21,7 @@ class FitText {
         Array.from(document.querySelectorAll('.inner-screen')).map(screen=>screen.innerHTML='')
         Array.from(document.querySelectorAll('.inner-screen')).map(screen=>screen.style.visibility='hidden')
         const screen = document.querySelector('.inner-screen')
+
         for (let i=0; i<this.blocks.length; i++) {
             const [endIndex, html] = this.#getRangedBlockIndex(screen, startIndex)
             this.logs[size].push({'blockStartIndex':startIndex, 'blockEndIndex':endIndex, 'html':html})
@@ -31,6 +35,38 @@ class FitText {
         console.debug(this.logs)
         this.pager.init(this.logs[this.size])
     }
+    /*
+    *#rangedBlockIndexIter() {
+        let tryHtml = ''
+        let html = ''
+        let idx = 0
+        const screen = document.querySelector('#screen .inner-screen')
+        //screen.style.visibility='hidden'
+        screen.innerHTML = ''
+        //screen.style.visibility='visible'
+        for (let [block, i] of TextBlock.iter(true)) {
+            const blockHtml = blockParser.parse(block)
+            tryHtml += blockHtml
+            screen.innerHTML = tryHtml
+            //if (this.#clientBlock() < this.#clientBlockEl(screen)) { return [i-1, html] }
+            //if (this.#clientBlock() < this.#clientBlockEl(screen)) { yield [i-1, html] }
+            if (this.#clientBlock() < this.#clientBlockEl(screen)) {
+                this.logs[this.size].push({'blockStartIndex':idx, 'blockEndIndex':i-1, 'html':html})
+                yield [i-1, html]
+            }
+            html += blockHtml
+            idx = i
+        }
+        //return [idx, html]
+        yield [idx, html]
+
+        // 画面分割数に合わせて空HTMLを作成する
+        if (0===(this.#screenCount()%2) && 1===((idx+1)%2)) {
+            this.logs[this.size].push({'blockStartIndex':-1, 'blockEndIndex':-1, 'html':''})
+            yield [-1, '']
+        }
+    }
+    */
     #getRangedBlockIndex(screen, startIndex=0) {
         let tryHtml = ''
         let html = ''
@@ -75,6 +111,49 @@ class Pager {
     constructor() { this.page = 0; this.logs = null; }
     #screenCount() { return Array.from(document.querySelectorAll('#screen .inner-screen')).length }
     init(logs) { this.page = 0; this.logs = logs; this.#set(); }
+
+
+    #set(isReverse=false) {
+        const screens = Array.from(document.querySelectorAll('#screen .inner-screen')) 
+        if (isReverse) { screens.reverse() }
+        for (let screen of screens) {
+            //screens[i].innerHTML = this.logs[(this.page*screens.length)+i].html
+            screens[i].innerHTML = this.#rangedBlockIndexIter().next()
+        }
+    }
+    #set() {
+        const screens = Array.from(document.querySelectorAll('#screen .inner-screen')) 
+        for (let i=0; i<screens.length; i++) {
+            screens[i].innerHTML = this.logs[(this.page*screens.length)+i].html
+        }
+    }
+    #getSet() {
+this.#rangedBlockIndexIter().next()
+        const screens = Array.from(document.querySelectorAll('#screen .inner-screen')) 
+        for (let i=0; i<screens.length; i++) {
+            screens[i].innerHTML = this.logs[(this.page*screens.length)+i].html
+        }
+    }
+    next() {
+        if (((this.page+1)*this.#screenCount()) < this.logs.length) {
+            this.page += 1
+            this.#set()
+        }
+
+
+        const screens = Array.from(document.querySelectorAll('#screen .inner-screen')) 
+        for (let screen of screens) {
+            screens[i].innerHTML = this.#rangedBlockIndexIter().next()
+        }
+        this.page = this.logs.length / screens
+    }
+    prev() {
+        if (0 < this.page) {
+            this.page -= 1
+            this.#set()
+        }
+    }
+    /*
     #set() {
         const screens = Array.from(document.querySelectorAll('#screen .inner-screen')) 
         for (let i=0; i<screens.length; i++) {
@@ -93,6 +172,51 @@ class Pager {
             this.#set()
         }
     }
+    */
+    *#rangedBlockIndexIter() {
+        let tryHtml = ''
+        let html = ''
+        let idx = 0
+        const screen = document.querySelector('#screen .inner-screen')
+        //screen.style.visibility='hidden'
+        screen.innerHTML = ''
+        //screen.style.visibility='visible'
+        for (let [block, i] of TextBlock.iter(true)) {
+            const blockHtml = blockParser.parse(block)
+            tryHtml += blockHtml
+            screen.innerHTML = tryHtml
+            //if (this.#clientBlock() < this.#clientBlockEl(screen)) { return [i-1, html] }
+            //if (this.#clientBlock() < this.#clientBlockEl(screen)) { yield [i-1, html] }
+            if (this.#clientBlock() < this.#clientBlockEl(screen)) {
+                //this.logs[this.size].push({'blockStartIndex':idx, 'blockEndIndex':i-1, 'html':html})
+                this.logs.push({'blockStartIndex':idx, 'blockEndIndex':i-1, 'html':html})
+                yield [i-1, html]
+            }
+            html += blockHtml
+            idx = i
+        }
+        //return [idx, html]
+        yield [idx, html]
+
+        // 画面分割数に合わせて空HTMLを作成する
+        if (0===(this.#screenCount()%2) && 1===((idx+1)%2)) {
+            //this.logs[this.size].push({'blockStartIndex':-1, 'blockEndIndex':-1, 'html':''})
+            this.logs.push({'blockStartIndex':-1, 'blockEndIndex':-1, 'html':''})
+            yield [-1, '']
+        }
+    }
+    #screenCount() { return Array.from(document.querySelectorAll('#screen .inner-screen')).length }
+    #isVertical() { return this.#writingMode().startsWith('vertical') }
+    #isHorizontal() { return this.#writingMode().startsWith('horizontal') }
+    #writingMode() { return Css.get('--writing-mode').trim().toLowerCase() }
+    #writingModeReverse() { return (this.#isVertical()) ? 'horizontal-tb' : 'vertical-rl' }
+    #clientBlock() { return (this.#isVertical()) ? this.#clientWidth() : this.#clientHeight() }
+    #clientBlockEl(el) { return el.getBoundingClientRect()[`${(this.#isVertical()) ? 'width' : 'height' }`] }
+//    #clientBlockRect(el) { return (this.#isVertical()) ? rect.width : rect.height }
+    #clientInline() { return (this.#isVertical()) ? this.#clientHeight() : this.#clientWidth() }
+    #clientWidth() { return document.documentElement.clientWidth }
+    #clientHeight() { return document.documentElement.clientHeight }
+
 }
 window.fitText = new FitText()
 })();

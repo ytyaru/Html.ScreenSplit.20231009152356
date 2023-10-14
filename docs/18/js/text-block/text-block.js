@@ -5,6 +5,13 @@
         #ranges = []
         #i = 0
         #idx = 0
+
+        #text = null
+        async load(url) { this.#text = await this.#getTextFromUrl(url); return this.#text; }
+        *iter(withIndex=false) { yield* this.#iter(this.#text, withIndex) }
+        *fromTextIter(text, withIndex=false) { yield* this.#iter(text, withIndex) }
+        //*fromTextIter(text=null, withIndex=false) { yield* this.#iter((await this.#getTextFromUrl(url)), withIndex) }
+
         /*
         async fromUrl(url) { // : List<String>
             return this.#gets((await this.#getTextFromUrl(url)))
