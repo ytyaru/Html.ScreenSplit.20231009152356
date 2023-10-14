@@ -3,36 +3,48 @@ class FitText {
     constructor() {
         this.logs = {} // 'width x height':{'blockIndex':0, 'text':'', 'html':''}
         this.index = -1
+        this.pager = new Pager()
     }
     set(blocks) { this.blocks = blocks }
+    #screenCount() { return Array.from(document.querySelectorAll('#screen .inner-screen')).length }
+    next() { this.pager.next() }
+    prev() { this.pager.prev() }
+    /*
     next() {
         if (this.index < this.logs[this.size].length-1) {
             this.index += 1
-            console.log(this.index)
+            //this.index += this.#screenCount()
+            console.log('index:', this.index)
             return this.logs[this.size][this.index]
         } else { return null }
     }
     prev() {
         if (0 < this.index) {
             this.index -= 1
-            console.log(this.index)
+            //this.index -= this.#screenCount()
+            console.log('index:', this.index)
             return this.logs[this.size][this.index]
         } else { return null }
     }
+    */
     calc() {
         let startIndex = 0
         const size = `${document.documentElement.clientWidth}x${document.documentElement.clientHeight}`
         this.size = size
         this.logs[size] = [] // {'blockStartIndex':0, 'blockEndIndex':0, 'html':''}
 
+        Array.from(document.querySelectorAll('.inner-screen')).map(screen=>screen.innerHTML='')
         Array.from(document.querySelectorAll('.inner-screen')).map(screen=>screen.style.visibility='hidden')
         const screen = document.querySelector('.inner-screen')
         for (let i=0; i<this.blocks.length; i++) {
             const [endIndex, html] = this.#getRangedBlockIndex(screen, startIndex)
             this.logs[size].push({'blockStartIndex':startIndex, 'blockEndIndex':endIndex, 'html':html})
             startIndex = endIndex + 1
-            i = endIndex
+            //i = endIndex
+            i = (i < endIndex) ? endIndex : i
         }
+        // 画面分割数に合わせて空HTMLを作成する
+        if (0===(this.#screenCount()%2) && 1===(this.logs[this.size].length%2)) { this.logs[this.size].push({'blockStartIndex':-1, 'blockEndIndex':-1, 'html':''}) }
         /*
         for (let screen of document.querySelectorAll('.inner-screen')) {
             for (let i=0; i<this.blocks.length; i++) {
@@ -45,6 +57,7 @@ class FitText {
         */
         Array.from(document.querySelectorAll('.inner-screen')).map(screen=>screen.style.visibility='visible')
         console.log(this.logs)
+        this.pager.init(this.logs[this.size])
     }
     #getRangedBlockIndex(screen, startIndex=0) {
         let tryHtml = ''
@@ -85,14 +98,16 @@ class FitText {
             //console.log(screen.clientWidth, screen.clientHeight, el.clientWidth, el.clientHeight)
             //console.log(screen.clientWidth, screen.clientHeight, rect.width, rect.height)
             //console.log(document.documentElement.clientWidth, document.documentElement.clientHeight, rect.width, rect.height)
-            console.log(document.documentElement.clientWidth, document.documentElement.clientHeight, rect.width, rect.height, Css.get('width', el), Css.get('height', el))
+            //console.log(document.documentElement.clientWidth, document.documentElement.clientHeight, rect.width, rect.height, Css.get('width', el), Css.get('height', el))
             //console.log(Css.getFloat('width', screen), Css.getFloat('height', screen), rect.width, rect.height)
             //if (screen.clientWidth < rect.width || screen.clientHeight < rect.height) { return [i-1, html] }
             //if (screen.clientWidth < el.clientWidth || screen.clientHeight < el.clientHeight) { return [i-1, html] }
             //if (document.documentElement.clientWidth < el.clientWidth || document.documentElement.clientHeight < el.clientHeight) { return [i-1, html] }
-            if (document.documentElement.clientWidth < rect.width || document.documentElement.clientHeight < rect.height) { return [i-1, html] }
-            console.log(blockSize, ((this.#isVertical()) ? rect.width : rect.height), Css.getFloat('block-size', screen), Css.getFloat('--screen-block-size'), rect.width, rect.height, this.#clientBlockRect(rect))
+            //if (document.documentElement.clientWidth < rect.width || document.documentElement.clientHeight < rect.height) { return [i-1, html] }
+            console.log(this.#clientBlock(), this.#clientBlockRect(rect))
+            if (this.#clientBlock() < this.#clientBlockRect(rect)) { return [i-1, html] }
             html += blockHtml
+            //console.log(blockSize, ((this.#isVertical()) ? rect.width : rect.height), Css.getFloat('block-size', screen), Css.getFloat('--screen-block-size'), rect.width, rect.height, this.#clientBlockRect(rect))
             //if (blockSize < ((this.#isVertical()) ? rect.width : rect.height)) { return [i-1, html] }
             //if (blockSize < this.#clientBlockRect(rect)) { document.body.removeChild(el); return [i-1, html] }
             //if (blockSize < ((this.#isVertical()) ? rect.width : rect.height)) { document.body.removeChild(el); return [i-1, html] }
@@ -112,5 +127,33 @@ class FitText {
     #clientHeight() { return document.documentElement.clientHeight }
 
 }
+class Pager {
+    constructor() { this.page = 0; this.logs = null; }
+    #screenCount() { return Array.from(document.querySelectorAll('#screen .inner-screen')).length }
+    init(logs) { this.page = 0; this.logs = logs; this.#set(); }
+    #set() {
+        console.log('Pager.#set()')
+        const screens = Array.from(document.querySelectorAll('#screen .inner-screen')) 
+        for (let i=0; i<screens.length; i++) {
+            console.log(screens[i], this.logs[(this.page*screens.length)+i].html)
+            screens[i].innerHTML = this.logs[(this.page*screens.length)+i].html
+        }
+    }
+    next() {
+        console.log('Pager.next()')
+        if (((this.page+1)*this.#screenCount()) < this.logs.length) {
+            this.page += 1
+            this.#set()
+        }
+    }
+    prev() {
+        console.log('Pager.prev()')
+        if (0 < this.page) {
+            this.page -= 1
+            this.#set()
+        }
+    }
+}
+
 window.fitText = new FitText()
 })();

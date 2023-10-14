@@ -12,9 +12,10 @@ window.addEventListener('DOMContentLoaded', async(event) => {
     centerSplitScreen.make({'hasSplitter':true, 'writingMode':'vertical'})
     centerSplitScreen.make({'count':0, 'writingMode':'vertical'})
     */
-    //centerSplitScreen.make()
-    centerSplitScreen.make({'count':1})
+    centerSplitScreen.make()
+//    centerSplitScreen.make({'count':1})
 //    centerSplitScreen.make({'writingMode':'vertical'})
+//    centerSplitScreen.make({'count':2, 'writingMode':'vertical'})
 //    centerSplitScreen.make({'count':0})
 //    centerSplitScreen.make({'count':0, 'writingMode':'vertical'})
     window.addEventListener('resize', debounce((e)=>{centerSplitScreen.resize()},300))
@@ -26,19 +27,34 @@ window.addEventListener('DOMContentLoaded', async(event) => {
     
     fitText.set(blocks)
     fitText.calc()
-    document.querySelector('.inner-screen').innerHTML = fitText.next().html
+    //document.querySelector('.inner-screen').innerHTML = fitText.next().html
+    //setInnerHtml('next')
 
     window.addEventListener('click', async(event) => {
-        setInnerHtml(fitText.next()?.html)
+        //setInnerHtml(fitText.next()?.html)
+        //setInnerHtml('next')
+        fitText.next()
     })
     window.addEventListener("keyup", (e) => {
         console.log(e.key)
         switch(e.key) {
-            case 'n': return setInnerHtml(fitText.next()?.html)
-            case 'p': return setInnerHtml(fitText.prev()?.html)
+//            case 'n': return setInnerHtml(fitText.next()?.html)
+//            case 'p': return setInnerHtml(fitText.prev()?.html)
+//            case 'n': return setInnerHtml('next')
+//            case 'p': return setInnerHtml('prev')
+            case 'n': return fitText.next()
+            case 'p': return fitText.prev()
         }
     });
-    function setInnerHtml(html) { if (html) { document.querySelector('.inner-screen').innerHTML = html } }
+    //function setInnerHtml(html) { if (html) { document.querySelector('.inner-screen').innerHTML = html } }
+    function setInnerHtml(action) {
+        const screens = Array.from(document.querySelectorAll('.inner-screen')) 
+        if ('prev'===action) { screens.reverse() }
+        for (let screen of screens) {
+            const block = fitText[action]()
+            screen.innerHTML = (block) ? block.html : ''
+        }
+    }
     /*
     */
     /*
