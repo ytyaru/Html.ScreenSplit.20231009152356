@@ -6,15 +6,16 @@ class FitText {
     }
     set(blocks) { this.blocks = blocks }
     next() {
-//        if (this.index < this.blocks.length) {
-        if (this.index < this.logs[this.size].length) {
+        if (this.index < this.logs[this.size].length-1) {
             this.index += 1
+            console.log(this.index)
             return this.logs[this.size][this.index]
         } else { return null }
     }
     prev() {
         if (0 < this.index) {
             this.index -= 1
+            console.log(this.index)
             return this.logs[this.size][this.index]
         } else { return null }
     }
@@ -29,7 +30,7 @@ class FitText {
             for (let i=0; i<this.blocks.length; i++) {
                 const [endIndex, html] = this.#getRangedBlockIndex(screen, startIndex)
                 this.logs[size].push({'blockStartIndex':startIndex, 'blockEndIndex':endIndex, 'html':html})
-                startIndex = endIndex
+                startIndex = endIndex + 1
                 i = endIndex
             }
         }
@@ -37,26 +38,70 @@ class FitText {
         console.log(this.logs)
     }
     #getRangedBlockIndex(screen, startIndex=0) {
+        let tryHtml = ''
         let html = ''
         const rangedBlocks = []
         screen.innerHTML = ''
-        const el = screen        
+        const blockSize = Css.getFloat('block-size', screen)
+        //const blockSize = Css.get('block-size', screen)
+        const el = screen
+        /*
+        const el = document.createElement('div')
+        el.classList.add('inner-screen')
+        el.style.inlineSize = Css.get('inline-size', screen)
+        el.style.blockSize = Css.get('block-size', screen)
+//        el.style.width = '100%'
+//        el.style.height = '100%'
+        el.style.position = 'absolute';
+        el.style.writingMode = Css.get('--writing-mode')
+        el.style.fontSize = Css.get('--font-size');
+        el.style.fontSize = Css.get('--font-size');
+        el.style.fontSize = Css.get('--font-size');
+        el.style.letterSpacing = Css.get('--letter-spacing');
+        el.style.lineHeight = Css.get('--line-height');
+        el.style.padding = Css.get('padding', screen);
+        document.body.appendChild(el)
+        */
         for (let i=startIndex; i<this.blocks.length; i++) {
-            html += paragraph.parse(this.blocks[i])
-            el.innerHTML = html
+            console.log(i, this.blocks[i])
+//            html += paragraph.parse(this.blocks[i])
+            const blockHtml = paragraph.parse(this.blocks[i])
+            tryHtml += blockHtml
+//            el.innerHTML = html
+            el.innerHTML = tryHtml
+            //console.log(i, this.blocks[i], html)
+            console.log(i, this.blocks[i], tryHtml)
             const rect = el.getBoundingClientRect()
 
             //console.log(screen.clientWidth, screen.clientHeight, el.clientWidth, el.clientHeight)
             //console.log(screen.clientWidth, screen.clientHeight, rect.width, rect.height)
-            console.log(document.documentElement.clientWidth, document.documentElement.clientHeight, rect.width, rect.height)
+            //console.log(document.documentElement.clientWidth, document.documentElement.clientHeight, rect.width, rect.height)
+            console.log(document.documentElement.clientWidth, document.documentElement.clientHeight, rect.width, rect.height, Css.get('width', el), Css.get('height', el))
             //console.log(Css.getFloat('width', screen), Css.getFloat('height', screen), rect.width, rect.height)
             //if (screen.clientWidth < rect.width || screen.clientHeight < rect.height) { return [i-1, html] }
             //if (screen.clientWidth < el.clientWidth || screen.clientHeight < el.clientHeight) { return [i-1, html] }
             //if (document.documentElement.clientWidth < el.clientWidth || document.documentElement.clientHeight < el.clientHeight) { return [i-1, html] }
             if (document.documentElement.clientWidth < rect.width || document.documentElement.clientHeight < rect.height) { return [i-1, html] }
+            console.log(blockSize, ((this.#isVertical()) ? rect.width : rect.height), Css.getFloat('block-size', screen), Css.getFloat('--screen-block-size'), rect.width, rect.height, this.#clientBlockRect(rect))
+            html += blockHtml
+            //if (blockSize < ((this.#isVertical()) ? rect.width : rect.height)) { return [i-1, html] }
+            //if (blockSize < this.#clientBlockRect(rect)) { document.body.removeChild(el); return [i-1, html] }
+            //if (blockSize < ((this.#isVertical()) ? rect.width : rect.height)) { document.body.removeChild(el); return [i-1, html] }
+            
         }
+        //document.body.removeChild(el)
         return [this.blocks.length-1, html]
     }
+    #isVertical() { return this.#writingMode().startsWith('vertical') }
+    #isHorizontal() { return this.#writingMode().startsWith('horizontal') }
+    #writingMode() { return Css.get('--writing-mode').trim().toLowerCase() }
+    #writingModeReverse() { return (this.#isVertical()) ? 'horizontal-tb' : 'vertical-rl' }
+    #clientBlock() { return (this.#isVertical()) ? this.#clientWidth() : this.#clientHeight() }
+    #clientBlockRect(rect) { return (this.#isVertical()) ? rect.width : rect.height }
+    #clientInline() { return (this.#isVertical()) ? this.#clientHeight() : this.#clientWidth() }
+    #clientWidth() { return document.documentElement.clientWidth }
+    #clientHeight() { return document.documentElement.clientHeight }
+
 }
 window.fitText = new FitText()
 })();

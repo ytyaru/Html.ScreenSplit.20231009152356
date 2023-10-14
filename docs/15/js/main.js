@@ -13,7 +13,8 @@ window.addEventListener('DOMContentLoaded', async(event) => {
     centerSplitScreen.make({'count':0, 'writingMode':'vertical'})
     */
     centerSplitScreen.make()
-    centerSplitScreen.make({'writingMode':'vertical'})
+//    centerSplitScreen.make({'count':1})
+//    centerSplitScreen.make({'writingMode':'vertical'})
 //    centerSplitScreen.make({'count':0})
 //    centerSplitScreen.make({'count':0, 'writingMode':'vertical'})
     window.addEventListener('resize', debounce((e)=>{centerSplitScreen.resize()},300))
@@ -37,7 +38,7 @@ window.addEventListener('DOMContentLoaded', async(event) => {
             case 'p': return setInnerHtml(fitText.prev()?.html)
         }
     });
-    function setInnerHtml(html) { if (html) { document.querySelector('.inner-screen').innerHTML = html }
+    function setInnerHtml(html) { if (html) { document.querySelector('.inner-screen').innerHTML = html } }
     /*
     */
     /*
