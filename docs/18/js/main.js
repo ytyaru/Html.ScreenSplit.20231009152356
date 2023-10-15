@@ -28,11 +28,26 @@ window.addEventListener('DOMContentLoaded', async(event) => {
         fitText.calc()
     },300))
 
+    /*
     performance.mark('TextBlock.load-start')
     await TextBlock.load('txt/manuscript.txt')
     performance.mark('TextBlock.load-end')
     performance.measure('TextBlock.load', 'TextBlock.load-start', 'TextBlock.load-end')
     console.log(performance.getEntriesByName('TextBlock.load')[0])
+    */
+    performance.mark('TextBlock.fromUrlIter-start')
+    //const blocks = await TextBlock.fromUrl('txt/manuscript.txt')
+    //const blocks = await TextBlock.fromUrlIter('txt/large.txt')
+    const blocks = []
+    for await (let [block, i] of TextBlock.fromUrlIter('txt/large.txt', true)) {
+//        console.debug(block)
+        blocks.push(block)
+    }
+    performance.mark('TextBlock.fromUrlIter-end')
+    performance.measure('TextBlock.fromUrlIter', 'TextBlock.fromUrlIter-start', 'TextBlock.fromUrlIter-end')
+    console.log(performance.getEntriesByName('TextBlock.fromUrlIter')[0])
+//    console.log(blocks)
+    //document.querySelector('.inner-screen').innerHTML = blocks.map(block=>paragraph.parse(block)).join('')
     /*
     performance.mark('TextBlock.fromUrl-start')
     //const blocks = await TextBlock.fromUrl('txt/manuscript.txt')
