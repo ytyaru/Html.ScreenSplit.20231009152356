@@ -197,6 +197,7 @@ class SpanSplitter { // innerHTML内にあるテキストを一字ずつspanで�
                 elIdxs.push({'start':startIdx, 'end':endIdx})
                 i = endIdx
                 startIdx = i + 1
+                name = ''
             }
             if ('<'===c && '/'!==n) { // 開始タグ
                 startIdx = i
