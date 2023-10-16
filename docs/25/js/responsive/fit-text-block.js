@@ -102,7 +102,7 @@ class FitParagraph {
     #clientHeight() { return document.documentElement.clientHeight }
 }
 class FitInlineElement {
-    constructor() { this.logs=null; this.blocks=[]; this.tryHtml=''; this.startIndex=0; }
+    constructor() { this.splitter=new SpanSplitter(); this.logs=null; this.blocks=[]; this.tryHtml=''; this.startIndex=0; }
     init(logs) { this.logs=logs; }
     resize() { this.tryHtml=''; this.startIndex=0; }
     addBlock(block) {
@@ -123,7 +123,24 @@ class FitInlineElement {
         }
     }
     finish() { this.logs.push({'blockStartIndex':this.startIndex, 'blockEndIndex':-1, 'html':this.tryHtml}); }
-
+    splitParagraph(rangedHtml, blockHtml) {
+        let html = rangedHtml
+        screen.innerHTML = html
+        const letterSpanHtml = spanSplitter.split(blockHtml)
+        for (let el of letterSpanHtml.querySelectorAll(`span,ruby,em,a,q,kbd,address,del,ins.abbr,blockquote,var,samp,font,small,b,i,s,strike,u`)) {
+            html += el.outerHTML
+            screen.innerHTML += el.outerHTML
+            //const rect = el.getBoundingClientRect()
+            //if (this.#clientBlock() < rect.bottom) { // 一画面に収まらない
+            //}
+            if (this.#clientBlock() < this.#clientBlockEl(screen)) { // 一画面に収まらない
+                this.logs.push({'blockStartIndex':-1, 'blockEndIndex':-1, 'html':html})
+                html = ''
+                screen.innerHTML = ''
+            }
+        }
+        if (html) { this.logs.push({'blockStartIndex':-1, 'blockEndIndex':-1, 'html':html}) }
+    }
     /*
     constructor() { this.logs=null; this.tryHtml=''; }
     init(logs) { this.logs = logs; }
