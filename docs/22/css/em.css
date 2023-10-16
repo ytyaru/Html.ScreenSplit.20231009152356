@@ -1,0 +1,19 @@
+@charset "utf-8";
+:root { --em-style:filled dot; --em-color:#000000; }
+em {
+    font-style: normal; /* 非イタリック化 */
+    text-emphasis: var(--em-style) var(--em-color);
+    -webkit-text-emphasis: var(--em-style) var(--em-color);
+}
+em.dot { text-emphasis-style: dot; -webkit-text-emphasis: filled dot var(--em-color); }
+em.circle { text-emphasis-style: circle; -webkit-text-emphasis: filled circle var(--em-color); }
+em.double-circle { text-emphasis-style: double-circle; -webkit-text-emphasis: filled double-circle var(--em-color); }
+em.triangle { text-emphasis-style: triangle; -webkit-text-emphasis: filled triangle var(--em-color); }
+em.sesame { text-emphasis-style: sesame; -webkit-text-emphasis: filled sesame var(--em-color); }
+em.char { text-emphasis-style: '🌙'; -webkit-text-emphasis-style:  '🌙'; }
+em.open-dot { text-emphasis-style: open dot; -webkit-text-emphasis: open dot var(--em-color); }
+em.open-circle { text-emphasis-style: open circle; -webkit-text-emphasis: open circle var(--em-color); }
+em.open-double-circle { text-emphasis-style: open double-circle; -webkit-text-emphasis: open double-circle var(--em-color); }
+em.open-triangle { text-emphasis-style: open triangle; -webkit-text-emphasis: open triangle var(--em-color); }
+em.open-sesame { text-emphasis-style: open sesame; -webkit-text-emphasis: open sesame var(--em-color); }
+
