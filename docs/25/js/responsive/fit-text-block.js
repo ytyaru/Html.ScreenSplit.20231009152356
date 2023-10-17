@@ -2,7 +2,8 @@
 class FitTextBlock {
     constructor() {
         this.pager = new Pager()
-        this.fitP = new FitParagraph()
+        //this.fitP = new FitParagraph()
+        this.fitE = new FitInlineElement()
         this.clearBlock()
     }
     clearBlock() {
@@ -17,15 +18,18 @@ class FitTextBlock {
         Array.from(document.querySelectorAll('#dummy-screen .inner-screen')).map(screen=>screen.innerHTML='')
         const screen = document.querySelector('#dummy-screen .inner-screen')
 
-        this.fitP.addBlock(block)
+        //this.fitP.addBlock(block)
+        this.fitE.addBlock(block)
         this.pager.setSplitterText()
 
         // 最初の頁を表示する（未実装：前回復元時は所定頁をHTML表示する）
         if (this.logs[this.size].length===this.#screenCount()) { this.init() }
     }
-    addBlockEnd() { this.fitP.finish(); this.init(); }
+    //addBlockEnd() { this.fitP.finish(); this.init(); }
+    addBlockEnd() { this.fitE.finish(); this.init(); }
     #screenCount() { return Array.from(document.querySelectorAll('#screen .inner-screen')).length }
-    init() { this.pager.init(this.logs[this.size]); this.fitP.init(this.logs[this.size]); }
+    //init() { this.pager.init(this.logs[this.size]); this.fitP.init(this.logs[this.size]); }
+    init() { this.pager.init(this.logs[this.size]); this.fitE.init(this.logs[this.size]); }
     next() { this.pager.next() }
     prev() { this.pager.prev() }
     resize() { // this.blocksはすべて読込完了している前提。つまり完了するまではresizeを呼び出すべきではない。
@@ -33,10 +37,12 @@ class FitTextBlock {
         if (!this.logs.hasOwnProperty(this.size)) { 
             this.logs[this.size] = []
             this.init()
-            this.fitP.resize()
+            //this.fitP.resize()
+            this.fitE.resize()
             for (let block of this.blocks) { this.addBlock(block) }
             this.addBlockEnd()
-        } else { this.init(); this.fitP.resize(); } // 既存のlogs[size]を使い回す（再計算しない）
+        } else { this.init(); this.fitE.resize(); } // 既存のlogs[size]を使い回す（再計算しない）
+        //} else { this.init(); this.fitP.resize(); } // 既存のlogs[size]を使い回す（再計算しない）
     }
 }
 class Pager {
@@ -116,30 +122,42 @@ class FitInlineElement {
         this.tryHtml += blockHtml
         screen.innerHTML = this.tryHtml
         if (this.#clientBlock() < this.#clientBlockEl(screen)) { // 一画面に収まらない
-            if (''===html) { throw new Error('この段落は一画面に収まりません。複数の段落に分けてください。') }
-            this.tryHtml = blockHtml
-            this.logs.push({'blockStartIndex':this.startIndex, 'blockEndIndex':this.blocks.length-1, 'html':html})
+            //html = this.#splitParagraph(html, blockHtml)
+            this.tryHtml = this.#splitParagraph(html, blockHtml)
             this.startIndex = this.blocks.length
+//            if (''===html) { throw new Error('この段落は一画面に収まりません。複数の段落に分けてください。') }
+//            this.tryHtml = blockHtml
+//            this.logs.push({'blockStartIndex':this.startIndex, 'blockEndIndex':this.blocks.length-1, 'html':html})
+//            this.startIndex = this.blocks.length
         }
     }
     finish() { this.logs.push({'blockStartIndex':this.startIndex, 'blockEndIndex':-1, 'html':this.tryHtml}); }
-    splitParagraph(rangedHtml, blockHtml) {
+    #splitParagraph(rangedHtml, blockHtml) {
         let html = rangedHtml
         screen.innerHTML = html
-        const letterSpanHtml = spanSplitter.split(blockHtml)
-        for (let el of letterSpanHtml.querySelectorAll(`span,ruby,em,a,q,kbd,address,del,ins.abbr,blockquote,var,samp,font,small,b,i,s,strike,u`)) {
-            html += el.outerHTML
+        this.tryHtml = rangedHtml
+        const letterSpanHtmlDiv = document.createElement('div')
+        const letterSpanHtml = this.splitter.split(blockHtml)
+        letterSpanHtmlDiv.innerHTML = letterSpanHtml
+        for (let el of letterSpanHtmlDiv.querySelectorAll(`span,ruby,em,a,q,kbd,address,del,ins.abbr,blockquote,var,samp,font,small,b,i,s,strike,u`)) {
+            this.tryHtml += el.outerHTML
             screen.innerHTML += el.outerHTML
             //const rect = el.getBoundingClientRect()
             //if (this.#clientBlock() < rect.bottom) { // 一画面に収まらない
             //}
             if (this.#clientBlock() < this.#clientBlockEl(screen)) { // 一画面に収まらない
-                this.logs.push({'blockStartIndex':-1, 'blockEndIndex':-1, 'html':html})
-                html = ''
-                screen.innerHTML = ''
+                this.logs.push({'blockStartIndex':this.startIndex, 'blockEndIndex':this.blocks.length-1, 'html':html})
+                html = el.outerHTML             // p直下の一要素は一画面内に収まる想定
+                screen.innerHTML = el.outerHTML // p直下の一要素は一画面内に収まる想定
+                if (this.#clientBlock() < this.#clientBlockEl(screen)) { throw new Error('段落内にあるHTML要素のうち少なくとも一つが一画面内に収まらないほど大きいです。画面に収まる要素サイズに調整してください。') } // 一要素が一画面に収まらない
+                this.tryHtml = el.outerHTML
+            } else {
+                html += el.outerHTML
             }
+            //html += el.outerHTML
         }
-        if (html) { this.logs.push({'blockStartIndex':-1, 'blockEndIndex':-1, 'html':html}) }
+        // if (html) { this.logs.push({'blockStartIndex':-1, 'blockEndIndex':-1, 'html':html}) }
+        return html // 次の画面に収まる表示すべきHTMLテキスト
     }
     /*
     constructor() { this.logs=null; this.tryHtml=''; }
