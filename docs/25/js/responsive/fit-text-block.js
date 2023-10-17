@@ -112,6 +112,7 @@ class FitInlineElement {
     init(logs) { this.logs=logs; }
     resize() { this.tryHtml=''; this.startIndex=0; }
     addBlock(block) {
+        console.log(`FitInlineElement.addBlock`)
         if (!TextBlock.isIterd) { this.blocks.push(block) }
         let startIndex = 0
         Array.from(document.querySelectorAll('#dummy-screen .inner-screen')).map(screen=>screen.innerHTML='')
@@ -125,6 +126,7 @@ class FitInlineElement {
             //html = this.#splitParagraph(html, blockHtml)
             this.tryHtml = this.#splitParagraph(html, blockHtml)
             this.startIndex = this.blocks.length
+            console.log(this.logs)
 //            if (''===html) { throw new Error('この段落は一画面に収まりません。複数の段落に分けてください。') }
 //            this.tryHtml = blockHtml
 //            this.logs.push({'blockStartIndex':this.startIndex, 'blockEndIndex':this.blocks.length-1, 'html':html})
@@ -133,13 +135,18 @@ class FitInlineElement {
     }
     finish() { this.logs.push({'blockStartIndex':this.startIndex, 'blockEndIndex':-1, 'html':this.tryHtml}); }
     #splitParagraph(rangedHtml, blockHtml) {
+        console.log('#splitParagraph')
         let html = rangedHtml
         screen.innerHTML = html
-        this.tryHtml = rangedHtml
         const letterSpanHtmlDiv = document.createElement('div')
-        const letterSpanHtml = this.splitter.split(blockHtml)
+        console.log(blockHtml.slice(3).slice(0, -4))
+        //const letterSpanHtml = this.splitter.split(blockHtml)
+        const letterSpanHtml = this.splitter.split(blockHtml.slice(3).slice(0,-4)) // 先頭と末尾の<p></p>を削除する
+        console.log(letterSpanHtml)
         letterSpanHtmlDiv.innerHTML = letterSpanHtml
-        for (let el of letterSpanHtmlDiv.querySelectorAll(`span,ruby,em,a,q,kbd,address,del,ins.abbr,blockquote,var,samp,font,small,b,i,s,strike,u`)) {
+        for (let el of letterSpanHtmlDiv.children()) {
+        //for (let el of letterSpanHtmlDiv.querySelectorAll(`span,ruby,em,a,q,kbd,address,del,ins.abbr,blockquote,var,samp,font,small,b,i,s,strike,u`)) {
+            console.log(el)
             this.tryHtml += el.outerHTML
             screen.innerHTML += el.outerHTML
             //const rect = el.getBoundingClientRect()
@@ -213,7 +220,7 @@ class FitInlineElement {
 }
 class SpanSplitter { // innerHTML内にあるテキストを一字ずつspanで囲む。ただしruby,em,aなどのインラインHTML要素はそのまま出力する。
     split(html) {
-        // <???></???>, <??? />, <???>    HTMLタグには３パターンある。正規、XML、省略。<a></a>, <input/>, <input>等。今回は正規のみ
+        // <???></???>, <??? />, <???>    HTMLタグには３パターンある。正規、XML、省略。<a></a>, <br/>, <br>等。今回は正規のみ
         //html.matchAll(/(<[^<>]+>[^<>]+</([^<>]+)>)/g)
         // let matches = html.matchAll(/(<[^\/<>]+>[^<>]+<\/[^\/<>]+>)/g)
         // for (let match of matches) {console.log(match);}
@@ -240,7 +247,8 @@ class SpanSplitter { // innerHTML内にあるテキストを一字ずつspanで�
                 // [name, i] = this.#getName(html, i+1)
                 let [a, b] = this.#getName(html, i+1)
                 name = a
-                i = b
+                //i = b
+                i = (-1===b) ? i : b
                 console.log(i, name)
             }
         }
@@ -257,6 +265,7 @@ class SpanSplitter { // innerHTML内にあるテキストを一字ずつspanで�
     }
     #getEndTagIdx(html, s, name) {
         console.log('getEndTagIndex:', s, name)
+        if (['br'].some(n=>n===name)) { return s } // 終了タグが必ず省略されるもの
         for (let i=s; i<html.Graphemes.length; i++) {
             if ('<'!==html.Graphemes[i+0]) { continue }
             if ('/'!==html.Graphemes[i+1]) { continue }
