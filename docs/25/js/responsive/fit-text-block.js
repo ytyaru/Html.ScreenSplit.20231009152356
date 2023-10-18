@@ -137,6 +137,7 @@ class FitInlineElement {
     #splitParagraph(rangedHtml, blockHtml) {
         console.log('#splitParagraph')
         let html = rangedHtml
+        const screen = document.querySelector('#dummy-screen .inner-screen')
         screen.innerHTML = html
         const letterSpanHtmlEl = document.createElement('p')
         console.log(blockHtml.slice(3).slice(0, -4))
@@ -146,7 +147,8 @@ class FitInlineElement {
         letterSpanHtmlEl.innerHTML = letterSpanHtml
         console.log(letterSpanHtmlEl.outerHTML)
         console.log(letterSpanHtmlEl)
-        for (let el of letterSpanHtmlEl.children()) {
+        console.log(letterSpanHtmlEl.children)
+        for (let el of letterSpanHtmlEl.children) {
         //for (let el of letterSpanHtmlEl.querySelectorAll(`span,ruby,em,a,q,kbd,address,del,ins.abbr,blockquote,var,samp,font,small,b,i,s,strike,u`)) {
             console.log(el)
             this.tryHtml += el.outerHTML
