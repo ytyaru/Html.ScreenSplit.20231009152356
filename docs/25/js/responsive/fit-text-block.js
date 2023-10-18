@@ -125,6 +125,7 @@ class FitInlineElement {
         if (this.#clientBlock() < this.#clientBlockEl(screen)) { // 一画面に収まらない
             //html = this.#splitParagraph(html, blockHtml)
             this.tryHtml = this.#splitParagraph(html, blockHtml)
+            console.log(this.tryHtml)
             this.startIndex = this.blocks.length
             console.log(this.logs)
 //            if (''===html) { throw new Error('この段落は一画面に収まりません。複数の段落に分けてください。') }
@@ -135,9 +136,12 @@ class FitInlineElement {
     }
     finish() { this.logs.push({'blockStartIndex':this.startIndex, 'blockEndIndex':-1, 'html':this.tryHtml}); }
     #splitParagraph(rangedHtml, blockHtml) {
-        console.log('#splitParagraph')
+        console.log('#splitParagraph', rangedHtml, blockHtml)
         let html = rangedHtml
+        let inlineElText = ''
+        console.log(inlineElText)
         const screen = document.querySelector('#dummy-screen .inner-screen')
+        //screen.style.blockSize = '100%'
         screen.innerHTML = html
         const letterSpanHtmlEl = document.createElement('p')
         console.log(blockHtml.slice(3).slice(0, -4))
@@ -148,27 +152,61 @@ class FitInlineElement {
         console.log(letterSpanHtmlEl.outerHTML)
         console.log(letterSpanHtmlEl)
         console.log(letterSpanHtmlEl.children)
+        console.log(inlineElText)
         for (let el of letterSpanHtmlEl.children) {
         //for (let el of letterSpanHtmlEl.querySelectorAll(`span,ruby,em,a,q,kbd,address,del,ins.abbr,blockquote,var,samp,font,small,b,i,s,strike,u`)) {
             console.log(el)
-            this.tryHtml += el.outerHTML
-            screen.innerHTML += el.outerHTML
+            inlineElText += el.outerHTML
+            console.log(inlineElText)
+            //this.tryHtml += `<p>${this.inlineElText}</p>`
+            //this.tryHtml += el.outerHTML
+            //screen.innerHTML += el.outerHTML
+            //screen.innerHTML = rangedHtml + `<p>${inlineElText}</p>` 
+            screen.innerHTML += `<p>${inlineElText}</p>` 
+            console.log(screen.innerHTML)
+            console.log(this.#clientBlock(), this.#clientBlockEl(screen), this.#elBlockPos(el), this.#elBlockPos(Array.from(Array.from(screen.children).slice(-1)[0].children).slice(-1)[0]))
             //const rect = el.getBoundingClientRect()
             //if (this.#clientBlock() < rect.bottom) { // 一画面に収まらない
             //}
-            if (this.#clientBlock() < this.#clientBlockEl(screen)) { // 一画面に収まらない
-                this.logs.push({'blockStartIndex':this.startIndex, 'blockEndIndex':this.blocks.length-1, 'html':html})
-                html = el.outerHTML             // p直下の一要素は一画面内に収まる想定
-                screen.innerHTML = el.outerHTML // p直下の一要素は一画面内に収まる想定
+
+//            if (this.#isOverScreen(screen.querySelector('p:last').children.slice(-1))) { // 一画面に収まらない
+            console.log(screen.children)
+            //console.log(screen.children.slice(-1))
+            //console.log(screen.children.slice(-1)[0])
+            console.log(Array.from(screen.children).slice(-1))
+            console.log(Array.from(screen.children).slice(-1)[0])
+            console.log(Array.from(Array.from(screen.children).slice(-1)[0].children).slice(-1)[0])
+            if (this.#isOverScreen(Array.from(Array.from(screen.children).slice(-1)[0].children).slice(-1)[0])) { // 一画面に収まらない
+            //if (this.#isOverScreen(Array.from(screen.children).slice(-1)[0])) { // 一画面に収まらない
+            //if (this.#isOverScreen(Array.from(screen.children).slice(-1)[0].children.slice(-1)[0])) { // 一画面に収まらない
+//            if (this.#clientBlock() < this.#clientBlockEl(screen)) { // 一画面に収まらない
+                //console.log(((html) ? html : '')+`<p>${this.inlineElText}</p>`)
+                console.log(html)
+                console.log(`<p>${inlineElText}</p>`)
+                //this.logs.push({'blockStartIndex':this.startIndex, 'blockEndIndex':this.blocks.length-1, 'html':html})
+                //this.logs.push({'blockStartIndex':this.startIndex, 'blockEndIndex':this.startIndex, 'html':html+`<p>${this.inlineElText}</p>`})
+                this.logs.push({'blockStartIndex':this.startIndex, 'blockEndIndex':this.startIndex, 'html':((html) ? html : '')+`<p>${inlineElText}</p>`})
+                console.log(this.logs)
+                html = ''
+                inlineElText = el.outerHTML
+                console.log(inlineElText)
+                //html = el.outerHTML             // p直下の一要素は一画面内に収まる想定
+                //screen.innerHTML = el.outerHTML // p直下の一要素は一画面内に収まる想定
+                //screen.innerHTML = `<p>${el.outerHTML}</p>` // p直下の一要素は一画面内に収まる想定
+                screen.innerHTML = ''
                 if (this.#clientBlock() < this.#clientBlockEl(screen)) { throw new Error('段落内にあるHTML要素のうち少なくとも一つが一画面内に収まらないほど大きいです。画面に収まる要素サイズに調整してください。') } // 一要素が一画面に収まらない
-                this.tryHtml = el.outerHTML
+                //this.tryHtml = el.outerHTML
             } else {
-                html += el.outerHTML
+                //html += el.outerHTML
+                //this.inlineElText += el.outerHTML
             }
             //html += el.outerHTML
         }
+        //this.tryHtml = `${html}<p>${this.inlineElText}</p>`
+        this.tryHtml = `${(html) ? html : ''}<p>${inlineElText}</p>`
+        return this.tryHtml // 次の画面に収まる表示すべきHTMLテキスト
         // if (html) { this.logs.push({'blockStartIndex':-1, 'blockEndIndex':-1, 'html':html}) }
-        return html // 次の画面に収まる表示すべきHTMLテキスト
+//        return html // 次の画面に収まる表示すべきHTMLテキスト
     }
     /*
     constructor() { this.logs=null; this.tryHtml=''; }
@@ -221,6 +259,11 @@ class FitInlineElement {
     #clientInline() { return (this.#isVertical()) ? this.#clientHeight() : this.#clientWidth() }
     #clientWidth() { return document.documentElement.clientWidth }
     #clientHeight() { return document.documentElement.clientHeight }
+    //#elBlockPos(el) { return el.getBoundingClientRect()[`${(this.#isVertical()) ? 'x' : 'y' }`] }
+    #elBlockPos(el) { console.log('elBlockPos:', this.#isVertical(), `${(this.#isVertical()) ? 'x' : 'y' }:`, el.getBoundingClientRect()[`${(this.#isVertical()) ? 'x' : 'y' }`]); return el.getBoundingClientRect()[`${(this.#isVertical()) ? 'x' : 'y' }`] }
+    //#elBlockPos(el) { console.log('elBlockPos:', this.#isVertical(), `${(this.#isVertical()) ? 'x' : 'y' }:`, el.getBoundingClientRect()[`${(this.#isVertical()) ? 'x' : 'y' }`]); return el.getBoundingClientRect()[`y`] }
+    #isOverScreen(el) { return (this.#clientBlock() < this.#elBlockPos(el)) }
+    //#isOverScreen(el) { return (this.#clientBlock() < el.getBoundingClientRect()[`${(this.#isVertical()) ? 'x' : 'y' }`]) }
 }
 class SpanSplitter { // innerHTML内にあるテキストを一字ずつspanで囲む。ただしruby,em,aなどのインラインHTML要素はそのまま出力する。
     split(html) {
@@ -256,6 +299,7 @@ class SpanSplitter { // innerHTML内にあるテキストを一字ずつspanで�
                 console.log(i, name)
             }
         }
+        console.log(html)
         console.log(elIdxs)
         console.log(elIdxs[0])
         return this.#join(html, elIdxs)
@@ -287,6 +331,7 @@ class SpanSplitter { // innerHTML内にあるテキストを一字ずつspanで�
         let lastElIdx = null
         if (0 < elIdxs.length && 0 < elIdxs[0].start) {
             text += this.#textToSpan(html.Graphemes.slice(0, elIdxs[0].start))
+            console.log(text)
         }
         for (let i=0; i<elIdxs.length; i++) {
             if (0 < elIdxs[i].start) {
@@ -294,11 +339,11 @@ class SpanSplitter { // innerHTML内にあるテキストを一字ずつspanで�
                 text += html.Graphemes.slice(elIdxs[i].start, elIdxs[i].end).join('')
                 console.log(text)
                 if (i+1 < elIdxs.length) { // 次のHTML要素があるなら、今のHTML要素との間にあるプレーンテキストをspan化する
-                    console.log(html.Graphemes.slice(elIdxs[i].end-1, elIdxs[i+1].start))
-                    text += this.#textToSpan(html.Graphemes.slice(elIdxs[i].end-1, elIdxs[i+1].start))
+                    console.log(html.Graphemes.slice(elIdxs[i].end, elIdxs[i+1].start))
+                    text += this.#textToSpan(html.Graphemes.slice(elIdxs[i].end, elIdxs[i+1].start))
                     console.log(text)
                 } else { // 次のHTML要素がないなら、今のHTML要素から最後のプレーンテキストまでをspan化する
-                    text += this.#textToSpan(html.Graphemes.slice(elIdxs[i].end-1))
+                    text += this.#textToSpan(html.Graphemes.slice(elIdxs[i].end))
                 }
             }
         }
