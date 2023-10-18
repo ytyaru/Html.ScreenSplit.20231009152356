@@ -138,14 +138,16 @@ class FitInlineElement {
         console.log('#splitParagraph')
         let html = rangedHtml
         screen.innerHTML = html
-        const letterSpanHtmlDiv = document.createElement('div')
+        const letterSpanHtmlEl = document.createElement('p')
         console.log(blockHtml.slice(3).slice(0, -4))
         //const letterSpanHtml = this.splitter.split(blockHtml)
         const letterSpanHtml = this.splitter.split(blockHtml.slice(3).slice(0,-4)) // 先頭と末尾の<p></p>を削除する
         console.log(letterSpanHtml)
-        letterSpanHtmlDiv.innerHTML = letterSpanHtml
-        for (let el of letterSpanHtmlDiv.children()) {
-        //for (let el of letterSpanHtmlDiv.querySelectorAll(`span,ruby,em,a,q,kbd,address,del,ins.abbr,blockquote,var,samp,font,small,b,i,s,strike,u`)) {
+        letterSpanHtmlEl.innerHTML = letterSpanHtml
+        console.log(letterSpanHtmlEl.outerHTML)
+        console.log(letterSpanHtmlEl)
+        for (let el of letterSpanHtmlEl.children()) {
+        //for (let el of letterSpanHtmlEl.querySelectorAll(`span,ruby,em,a,q,kbd,address,del,ins.abbr,blockquote,var,samp,font,small,b,i,s,strike,u`)) {
             console.log(el)
             this.tryHtml += el.outerHTML
             screen.innerHTML += el.outerHTML
@@ -281,6 +283,50 @@ class SpanSplitter { // innerHTML内にあるテキストを一字ずつspanで�
     #join(html, elIdxs) {
         let text = ''
         let lastElIdx = null
+        if (0 < elIdxs.length && 0 < elIdxs[0].start) {
+            text += this.#textToSpan(html.Graphemes.slice(0, elIdxs[0].start))
+        }
+        for (let i=0; i<elIdxs.length; i++) {
+            if (0 < elIdxs[i].start) {
+                console.log(html.Graphemes.slice(elIdxs[i].start, elIdxs[i].end).join(''))
+                text += html.Graphemes.slice(elIdxs[i].start, elIdxs[i].end).join('')
+                console.log(text)
+                if (i+1 < elIdxs.length) { // 次のHTML要素があるなら、今のHTML要素との間にあるプレーンテキストをspan化する
+                    console.log(html.Graphemes.slice(elIdxs[i].end-1, elIdxs[i+1].start))
+                    text += this.#textToSpan(html.Graphemes.slice(elIdxs[i].end-1, elIdxs[i+1].start))
+                    console.log(text)
+                } else { // 次のHTML要素がないなら、今のHTML要素から最後のプレーンテキストまでをspan化する
+                    text += this.#textToSpan(html.Graphemes.slice(elIdxs[i].end-1))
+                }
+            }
+        }
+        /*
+        for (let elIdx of elIdxs) {
+//            if (0 < elIdx.start) { text += html.Graphemes.slice(0, elIdx.start).join('') }
+//            if (0 < elIdx.start) { text += this.#textToSpan(html.Graphemes.slice(0, elIdx.start)) }
+//            text += html.Graphemes.slice(elIdx.start, elIdx.end).join('')
+            if (0 < elIdx.start) {
+                text += html.Graphemes.slice(elIdx.start, elIdx.end).join('')
+                if (i+1 < elIdxs.length-1) { // 次のHTML要素があるなら、今のHTML要素との間にあるプレーンテキストをspan化する
+                    text += this.#textToSpan(html.Graphemes.slice(elIdxs[i].end, elIdxs[i+1].start-1))
+                } else { // 次のHTML要素がないなら、今のHTML要素から最後のプレーンテキストまでをspan化する
+                    text += this.#textToSpan(html.Graphemes.slice(elIdxs[i].end))
+                }
+            }
+            lastElIdx = elIdx
+        }
+        if (lastElIdx.end < html.length-1) {
+//            text += html.Graphemes.slice(lastElIdx.end).join('')
+            text += this.#textToSpan(html.Graphemes.slice(lastElIdx.end))
+        }
+        */
+        return text
+    }
+
+    /*
+    #join(html, elIdxs) {
+        let text = ''
+        let lastElIdx = null
         for (let elIdx of elIdxs) {
 //            if (0 < elIdx.start) { text += html.Graphemes.slice(0, elIdx.start).join('') }
             if (0 < elIdx.start) { text += this.#textToSpan(html.Graphemes.slice(0, elIdx.start)) }
@@ -293,6 +339,7 @@ class SpanSplitter { // innerHTML内にあるテキストを一字ずつspanで�
         }
         return text
     }
+    */
     #textToSpan(graphemes) {
         let html = ''
         for (let g of graphemes) { html += `<span>${g}</span>` }
