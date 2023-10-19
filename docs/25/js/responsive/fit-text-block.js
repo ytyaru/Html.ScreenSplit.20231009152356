@@ -296,7 +296,8 @@ class SpanSplitter { // innerHTML内にあるテキストを一字ずつspanで�
                 console.log({'start':startIdx, 'end':endIdx})
                 elIdxs.push({'start':startIdx, 'end':endIdx})
                 i = endIdx
-                startIdx = i + 1
+                //startIdx = i + 1
+                startIdx = i
                 name = ''
             }
             if ('<'===c && '/'!==n) { // 開始タグ
@@ -308,6 +309,11 @@ class SpanSplitter { // innerHTML内にあるテキストを一字ずつspanで�
                 //i = b
                 i = (-1===b) ? i : b
                 console.log(i, name)
+
+                // 終了タグがない形
+                if ('br'===name) { elIdxs.push({'start':startIdx, 'end':startIdx+name.length+1}); name=''; }
+                // 終了タグがある形
+                else {}
             }
         }
         console.log(html)
@@ -333,8 +339,8 @@ class SpanSplitter { // innerHTML内にあるテキストを一字ずつspanで�
             }
             if ('>'!==html.Graphemes[i+2+name.length]) { continue }
             //return i
-            //return i+2+name.length
-            return i+2+name.length+1
+            return i+2+name.length
+            //return i+2+name.length+1
         }
     }
     #join(html, elIdxs) {
@@ -346,15 +352,20 @@ class SpanSplitter { // innerHTML内にあるテキストを一字ずつspanで�
         }
         for (let i=0; i<elIdxs.length; i++) {
             if (0 < elIdxs[i].start) {
-                console.log(html.Graphemes.slice(elIdxs[i].start, elIdxs[i].end).join(''))
-                text += html.Graphemes.slice(elIdxs[i].start, elIdxs[i].end).join('')
+//                console.log(html.Graphemes.slice(elIdxs[i].start, elIdxs[i].end).join(''))
+//                text += html.Graphemes.slice(elIdxs[i].start, elIdxs[i].end).join('')
+                console.log(html.Graphemes.slice(elIdxs[i].start, elIdxs[i].end+1).join(''))
+                text += html.Graphemes.slice(elIdxs[i].start, elIdxs[i].end+1).join('')
                 console.log(text)
                 if (i+1 < elIdxs.length) { // 次のHTML要素があるなら、今のHTML要素との間にあるプレーンテキストをspan化する
-                    console.log(html.Graphemes.slice(elIdxs[i].end, elIdxs[i+1].start))
-                    text += this.#textToSpan(html.Graphemes.slice(elIdxs[i].end, elIdxs[i+1].start))
+//                    console.log(html.Graphemes.slice(elIdxs[i].end, elIdxs[i+1].start))
+//                    text += this.#textToSpan(html.Graphemes.slice(elIdxs[i].end, elIdxs[i+1].start))
+                    console.log(html.Graphemes.slice(elIdxs[i].end+1, elIdxs[i+1].start))
+                    text += this.#textToSpan(html.Graphemes.slice(elIdxs[i].end+1, elIdxs[i+1].start))
                     console.log(text)
                 } else { // 次のHTML要素がないなら、今のHTML要素から最後のプレーンテキストまでをspan化する
-                    text += this.#textToSpan(html.Graphemes.slice(elIdxs[i].end))
+//                    text += this.#textToSpan(html.Graphemes.slice(elIdxs[i].end))
+                    text += this.#textToSpan(html.Graphemes.slice(elIdxs[i].end+1))
                 }
             }
         }
@@ -406,5 +417,8 @@ class SpanSplitter { // innerHTML内にあるテキストを一字ずつspanで�
 }
 const spanSplitter = new SpanSplitter()
 console.log(spanSplitter.split('これはinnerHTML内テキストです。<em>HTMLタグ</em>も含みます。'))
+console.log(spanSplitter.split('　<ruby>山田<rp>（</rp><rt>やまだ</rt><rp>）</rp></ruby><ruby>太郎<rp>（</rp><rt>たろう</rt><rp>）</rp></ruby>のように人名、固有名詞にルビを振ることが多いでしょう。'))
+//console.log(spanSplitter.split('　山田《やまだ》太郎《たろう》のように人名、固有名詞にルビを振ることが多いでしょう。'))
+
 window.fitTextBlock = new FitTextBlock()
 })();
