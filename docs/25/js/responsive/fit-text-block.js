@@ -162,7 +162,8 @@ class FitInlineElement {
             //this.tryHtml += el.outerHTML
             //screen.innerHTML += el.outerHTML
             //screen.innerHTML = rangedHtml + `<p>${inlineElText}</p>` 
-            screen.innerHTML += `<p>${inlineElText}</p>` 
+            //screen.innerHTML += `<p>${inlineElText}</p>` 
+            screen.innerHTML = `${(rangedHtml) ? rangedHtml : ''}<p>${inlineElText}</p>` 
             console.log(screen.innerHTML)
             console.log(this.#clientBlock(), this.#clientBlockEl(screen), this.#elBlockPos(el), this.#elBlockPos(Array.from(Array.from(screen.children).slice(-1)[0].children).slice(-1)[0]))
             //const rect = el.getBoundingClientRect()
@@ -260,7 +261,17 @@ class FitInlineElement {
     #clientWidth() { return document.documentElement.clientWidth }
     #clientHeight() { return document.documentElement.clientHeight }
     //#elBlockPos(el) { return el.getBoundingClientRect()[`${(this.#isVertical()) ? 'x' : 'y' }`] }
-    #elBlockPos(el) { console.log('elBlockPos:', this.#isVertical(), `${(this.#isVertical()) ? 'x' : 'y' }:`, el.getBoundingClientRect()[`${(this.#isVertical()) ? 'x' : 'y' }`]); return el.getBoundingClientRect()[`${(this.#isVertical()) ? 'x' : 'y' }`] }
+    #elBlockPos(el) {
+        console.log('elBlockPos:', 
+            this.#isVertical(), 
+            `${(this.#isVertical()) ? 'x' : 'y' }:`, el.getBoundingClientRect()[`${(this.#isVertical()) ? 'x' : 'y' }`],
+            'x:', el.getBoundingClientRect()['x'],
+            'y:', el.getBoundingClientRect()['y'],
+            'w:', el.getBoundingClientRect()['width'],
+            'h:', el.getBoundingClientRect()['height'],
+        );
+        return el.getBoundingClientRect()[`${(this.#isVertical()) ? 'x' : 'y' }`] }
+    //#elBlockPos(el) { console.log('elBlockPos:', this.#isVertical(), `${(this.#isVertical()) ? 'x' : 'y' }:`, el.getBoundingClientRect()[`${(this.#isVertical()) ? 'x' : 'y' }`]); return el.getBoundingClientRect()[`${(this.#isVertical()) ? 'x' : 'y' }`] }
     //#elBlockPos(el) { console.log('elBlockPos:', this.#isVertical(), `${(this.#isVertical()) ? 'x' : 'y' }:`, el.getBoundingClientRect()[`${(this.#isVertical()) ? 'x' : 'y' }`]); return el.getBoundingClientRect()[`y`] }
     #isOverScreen(el) { return (this.#clientBlock() < this.#elBlockPos(el)) }
     //#isOverScreen(el) { return (this.#clientBlock() < el.getBoundingClientRect()[`${(this.#isVertical()) ? 'x' : 'y' }`]) }
