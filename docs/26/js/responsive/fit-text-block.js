@@ -131,7 +131,9 @@ class FitInlineElement {
     }
     finish() { this.logs.push({'blockStartIndex':this.startIndex, 'blockEndIndex':-1, 'html':this.tryHtml}); }
     #splitParagraph(rangedHtml, blockHtml) {
-        console.debug('#splitParagraph', rangedHtml, blockHtml)
+        console.debug('#splitParagraph')
+        console.debug(rangedHtml)
+        console.debug(blockHtml)
         let html = rangedHtml
         let inlineElText = ''
         console.debug(inlineElText)
@@ -158,7 +160,9 @@ class FitInlineElement {
             if (this.#isOverScreen(Array.from(Array.from(screen.children).slice(-1)[0].children).slice(-1)[0])) { // 一画面に収まらない
                 console.debug(html)
                 console.debug(`<p>${inlineElText}</p>`)
-                this.logs.push({'blockStartIndex':this.startIndex, 'blockEndIndex':this.startIndex, 'html':((html) ? html : '')+`<p>${inlineElText}</p>`})
+                this.logs.push({'blockStartIndex':this.startIndex, 'blockEndIndex':this.startIndex, 
+                    'html':((html) ? html : '')+`${(inlineElText) ? '<p>'+inlineElText+'</p>' : ''}`})
+                //this.logs.push({'blockStartIndex':this.startIndex, 'blockEndIndex':this.startIndex, 'html':((html) ? html : '')+`<p>${inlineElText}</p>`})
                 console.debug(this.logs)
                 rangedHtml = ''
                 html = ''
