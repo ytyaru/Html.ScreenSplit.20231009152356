@@ -160,6 +160,7 @@ class FitInlineElement {
                 console.debug(`<p>${inlineElText}</p>`)
                 this.logs.push({'blockStartIndex':this.startIndex, 'blockEndIndex':this.startIndex, 'html':((html) ? html : '')+`<p>${inlineElText}</p>`})
                 console.debug(this.logs)
+                rangedHtml = ''
                 html = ''
                 inlineElText = el.outerHTML
                 console.debug(inlineElText)
