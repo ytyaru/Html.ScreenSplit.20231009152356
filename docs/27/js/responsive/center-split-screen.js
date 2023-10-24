@@ -21,6 +21,7 @@ class CenterSplitScreen {
         this.el.innerHTML = ''
         this.#addInnerScreen()
         this.#insertCenterSplitter()
+        this.#setText('再構成中…しばらくお待ちください')
         document.querySelector('#dummy-screen').remove()
         document.body.appendChild(this.#makeDummy())
         this.resize()
@@ -38,6 +39,7 @@ class CenterSplitScreen {
             this.el.setAttribute('id', 'screen')
         }
         this.#addInnerScreen()
+        this.#setText()
         this.#insertCenterSplitter()
         this.resize()
         return this.el
@@ -50,14 +52,15 @@ class CenterSplitScreen {
         }
         console.debug('addInnerScreen:', this.options.count)
         //this.#testText()
-        this.#loadingText()
+        //this.#loadingText()
     }
-    #hasSplitter() { return this.options.hasSplitter && 2==this.options.count }
+    //#hasSplitter() { return this.options.hasSplitter && 2==this.options.count }
+    #hasSplitter() { return this.options.hasSplitter }
     #insertCenterSplitter() {
         if (!this.#hasSplitter()) { return }
         const splitter = document.createElement('div')
         splitter.classList.add('splitter')
-        splitter.textContent = '中央スプリッター　1/99'
+        splitter.textContent = '中央スプリッター　n/N'
         //splitter.innerHTML = `中央スプリッター　1−<span class="text-combine">99</span>`
         this.el.querySelector('.inner-screen').insertAdjacentElement('afterend', splitter)
     }
@@ -92,7 +95,10 @@ class CenterSplitScreen {
     #gridRows() { return 1 }
     #gridInline() { return this.#clientInline() / this.options.count }
     #gridBlock() { return this.#clientBlock() }
-    #gridTemplateColumns() { return (1===this.options.count) ? '1fr' : `1fr ${(this.#hasSplitter()) ? this.#fontSize()+'px' : ''} 1fr`  }
+    //#gridTemplateColumns() { return (1===this.options.count) ? '1fr' : `1fr ${(this.#hasSplitter()) ? this.#fontSize()+'px' : ''} 1fr`  }
+    #gridTemplateColumns() { return `1fr ${(this.#hasSplitter()) ? this.#fontSize()+'px' : ''} ${(2===this.options.count) ? '1fr' : ''}` }
+// count:1  1fr / 1fr 16px
+// count:2  1fr 1fr / 1fr 16px 1fr
     #gridTemplateRows() { return `${this.#clientBlock()}px` }
     #gridGap() { return Css.getFloat('--font-size') }
     #gird() {
@@ -114,6 +120,7 @@ class CenterSplitScreen {
     #textOrientationReverse() { return (this.#isVertical()) ? 'mixed' : 'upright' }
     #textDecorationReverse() { return (this.#isVertical()) ? 'underline' : 'overline' }
     #loadingText() { this.el.querySelector('.inner-screen').innerHTML = '<h2>読込中……しばらくお待ちください</h2>' }
+    #setText(text='読込中……しばらくお待ちください') { this.el.querySelector('.inner-screen').innerHTML = `<h2>${text}</h2>` }
     #testText() {
         let i = 1;
         for (let el of this.el.querySelectorAll('.inner-screen')) {

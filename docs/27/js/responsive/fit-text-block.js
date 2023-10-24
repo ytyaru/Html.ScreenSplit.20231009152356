@@ -126,6 +126,7 @@ class FitInlineElement {
         screen.innerHTML = this.tryHtml
         screen.appendChild(blockHtmlEl)
         console.debug(screen.innerHTML)
+        console.debug(this.#isOverScreen(Array.from(Array.from(screen.children).slice(-1)[0].children).slice(-1)[0]))
 //        if (this.#clientBlock() < this.#clientBlockEl(screen)) { // 一画面に収まらない
 //        if (this.#isOverScreen(blockHtmlEl)) { // 一画面に収まらない
         if (this.#isOverScreen(Array.from(Array.from(screen.children).slice(-1)[0].children).slice(-1)[0])) { // 一画面に収まらない
@@ -192,10 +193,10 @@ class FitInlineElement {
     #clientWidth() { return document.documentElement.clientWidth }
     #clientHeight() { return document.documentElement.clientHeight }
     //#elBlockPos(el) { return el.getBoundingClientRect()[`${(this.#isVertical()) ? 'x' : 'y' }`] }
-    #elBlockPos(el) { return el.getBoundingClientRect()[`${(this.#isVertical()) ? 'left' : 'bottom' }`] }
-    /*
+    //#elBlockPos(el) { return el.getBoundingClientRect()[`${(this.#isVertical()) ? 'left' : 'bottom' }`] }
     #elBlockPos(el) {
         console.debug('elBlockPos:', 
+            el,
             this.#isVertical(), 
             `${(this.#isVertical()) ? 'left' : 'bottom' }:`, el.getBoundingClientRect()[`${(this.#isVertical()) ? 'left' : 'bottom' }`],
             'left:', el.getBoundingClientRect()['left'],
@@ -207,10 +208,16 @@ class FitInlineElement {
             'h:', el.getBoundingClientRect()['height'],
         );
         return el.getBoundingClientRect()[`${(this.#isVertical()) ? 'left' : 'bottom' }`] }
+    /*
     */
     //#elBlockPos(el) { console.debug('elBlockPos:', this.#isVertical(), `${(this.#isVertical()) ? 'x' : 'y' }:`, el.getBoundingClientRect()[`${(this.#isVertical()) ? 'x' : 'y' }`]); return el.getBoundingClientRect()[`${(this.#isVertical()) ? 'x' : 'y' }`] }
     //#elBlockPos(el) { console.debug('elBlockPos:', this.#isVertical(), `${(this.#isVertical()) ? 'x' : 'y' }:`, el.getBoundingClientRect()[`${(this.#isVertical()) ? 'x' : 'y' }`]); return el.getBoundingClientRect()[`y`] }
-    #isOverScreen(el) { return (this.#clientBlock() < this.#elBlockPos(el)) }
+    //#isOverScreen(el) { return (this.#clientBlock() < this.#elBlockPos(el)) }
+    #isOverScreen(el) {
+        const pos = this.#elBlockPos(el)
+        if (pos < 0) { return true }
+        return (this.#clientBlock() < pos)
+    }
     //#isOverScreen(el) { return (this.#clientBlock() < el.getBoundingClientRect()[`${(this.#isVertical()) ? 'x' : 'y' }`]) }
 }
 class SpanSplitter { // innerHTML内にあるテキストを一字ずつspanで囲む。ただしruby,em,aなどのインラインHTML要素はそのまま出力する。
