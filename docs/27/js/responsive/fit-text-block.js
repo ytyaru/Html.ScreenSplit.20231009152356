@@ -117,27 +117,57 @@ class FitInlineElement {
         let startIndex = 0
         Array.from(document.querySelectorAll('#dummy-screen .inner-screen')).map(screen=>screen.innerHTML='')
         const screen = document.querySelector('#dummy-screen .inner-screen')
+        console.debug(screen.innerHTML)
 
         const html = this.tryHtml
         const blockHtml = blockParser.parse(block)
-        const blockHtmlEl = document.createElement('p')
-        blockHtmlEl.innerHTML = blockHtml 
-        this.tryHtml += blockHtml
+        const blockHtmlEl = this.#text2El(blockHtml)
+//        const blockHtmlEl = document.createElement('div')
+//        blockHtmlEl.innerHTML = blockHtml
+//        blockHtmlEl = this.#peelOff(blockHtmlEl)
+//        this.tryHtml += blockHtml
         screen.innerHTML = this.tryHtml
         screen.appendChild(blockHtmlEl)
+        console.debug('blockHtml:', blockHtml)
+        console.debug('this.tryHtml:', this.tryHtml)
         console.debug(screen.innerHTML)
-        console.debug(this.#isOverScreen(Array.from(Array.from(screen.children).slice(-1)[0].children).slice(-1)[0]))
-//        if (this.#clientBlock() < this.#clientBlockEl(screen)) { // 一画面に収まらない
-//        if (this.#isOverScreen(blockHtmlEl)) { // 一画面に収まらない
-        if (this.#isOverScreen(Array.from(Array.from(screen.children).slice(-1)[0].children).slice(-1)[0])) { // 一画面に収まらない
-            screen.removeChild(blockHtmlEl)
-            this.tryHtml = this.#splitParagraph(html, blockHtml)
-            console.debug(this.tryHtml)
-            this.startIndex = this.blocks.length
-            console.debug(this.logs)
-        } else {screen.removeChild(blockHtmlEl)}
+        //console.debug(this.#isOverScreen(Array.from(Array.from(screen.children).slice(-1)[0].children).slice(-1)[0]))
+        console.debug(this.#isOverScreen(Array.from(screen.children).slice(-1)[0]))
+        console.debug(['p'].some(n=>n===blockHtmlEl.tagName.toLowerCase()))
+        console.debug(['h1','h2','h3','h4','h5','h6'].some(n=>n===blockHtmlEl.tagName.toLowerCase()))
+        console.debug(blockHtmlEl.tagName.toLowerCase())
+
+        if (this.#isOverScreen(Array.from(screen.children).slice(-1)[0])) { // 一画面に収まらない
+            if ('p'===blockHtmlEl.tagName.toLowerCase()) {
+                screen.removeChild(blockHtmlEl)
+                this.tryHtml = this.#splitParagraph(html, blockHtml)
+                //this.tryHtml = ('p'===blockHtmlEl.tagName.toLowerCase()) ? this.#splitParagraph(html, blockHtml) : blockHtml
+                console.debug(this.tryHtml)
+                this.startIndex = this.blocks.length
+                console.debug(this.logs)
+            } else if (['h1','h2','h3','h4','h5','h6'].some(n=>n===blockHtmlEl.tagName.toLowerCase())) {
+                screen.removeChild(blockHtmlEl)
+                this.logs.push({'blockStartIndex':this.startIndex, 'blockEndIndex':this.startIndex, 'html':html})
+                this.tryHtml = blockHtml
+                this.startIndex = this.blocks.length
+            }
+        } else {screen.removeChild(blockHtmlEl);this.tryHtml += blockHtml;}
     }
     finish() { this.logs.push({'blockStartIndex':this.startIndex, 'blockEndIndex':-1, 'html':this.tryHtml}); }
+    #text2El(html) {
+        const el = document.createElement('div')
+        el.innerHTML = html
+        return el.firstChild
+    }
+    #peelOff(el) { return el.firstChild }
+    /*
+    #peelOff(el) {
+        console.debug('#peelOff:', el)
+        el.parentNode.insertBefore(el.firstChild, el);
+        el.parentNode.removeChild(el);
+        return el.firstChild
+    }
+    */
     #splitParagraph(rangedHtml, blockHtml) {
         console.debug('#splitParagraph')
         console.debug(rangedHtml)
@@ -147,11 +177,21 @@ class FitInlineElement {
         console.debug(inlineElText)
         const screen = document.querySelector('#dummy-screen .inner-screen')
         screen.innerHTML = html
-        const letterSpanHtmlEl = document.createElement('p')
-        console.debug(blockHtml.slice(3).slice(0, -4))
-        const letterSpanHtml = this.splitter.split(blockHtml.slice(3).slice(0,-4)) // 先頭と末尾の<p></p>を削除する
-        console.debug(letterSpanHtml)
+        let letterSpanHtmlEl = document.createElement('p')
+        letterSpanHtmlEl.innerHTML = blockHtml
+        // 最上位親HTML要素pだけを取り除く
+        //if ('p'===letterSpanHtmlEl.tagName.toLowerCase()) {
+        letterSpanHtmlEl = this.#peelOff(letterSpanHtmlEl)
+        //console.debug(blockHtml.slice(3).slice(0, -4))
+        console.debug(letterSpanHtmlEl)
+
+        //const letterSpanHtml = this.splitter.split(blockHtml.slice(3).slice(0,-4)) // 先頭と末尾の<p></p>を削除する
+        //const letterSpanHtml = letterSpanHtmlEl.innerHTML
+        const letterSpanHtml = this.splitter.split(letterSpanHtmlEl.innerHTML) // 先頭と末尾の<p></p>を削除する
+        letterSpanHtmlEl.innerHTML = ''
         letterSpanHtmlEl.innerHTML = letterSpanHtml
+        console.debug(letterSpanHtml)
+        //letterSpanHtmlEl.innerHTML = letterSpanHtml
         console.debug(letterSpanHtmlEl.outerHTML)
         console.debug(letterSpanHtmlEl)
         console.debug(letterSpanHtmlEl.children)
