@@ -13,8 +13,8 @@ window.addEventListener('DOMContentLoaded', async(event) => {
     centerSplitScreen.make({'count':0, 'writingMode':'vertical'})
     */
     performance.mark('centerSplitScreen.make-start')
-    centerSplitScreen.make()
-//    centerSplitScreen.make({'count':1})
+//    centerSplitScreen.make()
+    centerSplitScreen.make({'count':1})
 //    centerSplitScreen.make({'count':1, 'writingMode':'vertical'})
 //    centerSplitScreen.make({'writingMode':'vertical'})
 //    centerSplitScreen.make({'count':2, 'writingMode':'vertical'})

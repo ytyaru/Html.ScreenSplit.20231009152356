@@ -277,7 +277,7 @@ class SpanSplitter { // innerHTML内にあるテキストを一字ずつspanで�
             if (name) { // </name>まで飛ばす
                 endIdx = this.#getEndTagIdx(html, i, name)
                 //endIdx = this.#getEndTagIdx(html, i-1, name)
-                console.debug({'start':startIdx, 'end':endIdx})
+                console.debug(endIdx, {'start':startIdx, 'end':endIdx})
                 elIdxs.push({'start':startIdx, 'end':endIdx})
                 i = endIdx
                 //startIdx = i + 1
@@ -306,6 +306,8 @@ class SpanSplitter { // innerHTML内にあるテキストを一字ずつspanで�
         return this.#join(html, elIdxs)
     }
     #getName(html, s) {
+        //if (-1<html.indexOf(' ') && -1<html.indexOf('>')) { return [html.split(' ')[0].substring(1), html.indexOf('>')+1] }
+        if (-1<html.indexOf(' ') && -1<html.indexOf('>')) { return [html.substring(s, html.indexOf(' ')), html.indexOf('>')+1] }
         for (let i=s; i<html.Graphemes.length; i++) {
             let c = html.Graphemes[i]
             if ('>'===c) { return [html.slice(s, i).trim('/').trim(), i+1] }
