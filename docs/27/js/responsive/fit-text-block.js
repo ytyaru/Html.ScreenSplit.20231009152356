@@ -226,7 +226,7 @@ class SpanSplitter { // innerHTML内にあるテキストを一字ずつspanで�
         //html.matchAll(/(<[^<>]+>[^<>]+</([^<>]+)>)/g)
         // let matches = html.matchAll(/(<[^\/<>]+>[^<>]+<\/[^\/<>]+>)/g)
         // for (let match of matches) {console.debug(match);}
-
+        console.debug('SpanSplitter.split:', html)
         const elIdxs = [] // {start:0, end:0}
         let [startIdx, endIdx]  = [0, 0]
         let name = null
@@ -290,6 +290,7 @@ class SpanSplitter { // innerHTML内にあるテキストを一字ずつspanで�
     #join(html, elIdxs) {
         let text = ''
         let lastElIdx = null
+        if (0===elIdxs.length) { return html.Graphemes.map(c=>`<span>${c}</span>`).join('') }
         if (0 < elIdxs.length && 0 < elIdxs[0].start) {
             text += this.#textToSpan(html.Graphemes.slice(0, elIdxs[0].start))
             console.debug(text)
