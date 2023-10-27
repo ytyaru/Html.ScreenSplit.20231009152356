@@ -136,11 +136,13 @@ class FitInlineElement {
         console.debug(['p'].some(n=>n===blockHtmlEl.tagName.toLowerCase()))
         console.debug(['h1','h2','h3','h4','h5','h6'].some(n=>n===blockHtmlEl.tagName.toLowerCase()))
         console.debug(blockHtmlEl.tagName.toLowerCase())
+        console.debug(blockHtmlEl.childNodes)
 
         if (this.#isOverScreen(Array.from(screen.children).slice(-1)[0])) { // 一画面に収まらない
             if ('p'===blockHtmlEl.tagName.toLowerCase()) {
                 screen.removeChild(blockHtmlEl)
-                this.tryHtml = this.#splitParagraph(html, blockHtml)
+                this.tryHtml = this.#splitParagraph2(html, blockHtmlEl)
+                //this.tryHtml = this.#splitParagraph(html, blockHtml)
                 //this.tryHtml = ('p'===blockHtmlEl.tagName.toLowerCase()) ? this.#splitParagraph(html, blockHtml) : blockHtml
                 console.debug(this.tryHtml)
                 this.startIndex = this.blocks.length
@@ -168,6 +170,111 @@ class FitInlineElement {
         return el.firstChild
     }
     */
+    #splitParagraph2(rangedHtml, blockHtmlEl) {
+        console.debug('#splitParagraph2')
+        console.debug(rangedHtml)
+        console.debug(blockHtmlEl)
+        let html = rangedHtml
+        let inlineElText = ''
+        const screen = document.querySelector('#dummy-screen .inner-screen')
+        screen.innerHTML = html
+
+        // 位置超過判定のため位置取得すべくTextNodeをspanで囲む。ただしTextNode以外はそのまま
+        const letterSpanHtmlEl = this.#encloseSpan(blockHtmlEl)
+        console.debug(letterSpanHtmlEl)
+        //for (let el of blockHtmlEl.childNodes) {
+        for (let el of letterSpanHtmlEl.children) {
+            console.debug(el)
+            inlineElText += el.outerHTML
+            console.debug(inlineElText)
+            screen.innerHTML = `${(rangedHtml) ? rangedHtml : ''}<p>${inlineElText}</p>` 
+            console.debug(screen.innerHTML)
+            console.debug(this.#clientBlock(), this.#clientBlockEl(screen), this.#elBlockPos(el), this.#elBlockPos(Array.from(Array.from(screen.children).slice(-1)[0].children).slice(-1)[0]))
+            console.debug(screen.children)
+            console.debug(Array.from(Array.from(screen.children).slice(-1)[0].children).slice(-1)[0])
+
+            if (this.#isOverScreen(Array.from(Array.from(screen.children).slice(-1)[0].children).slice(-1)[0])) { // 一画面に収まらない
+                console.debug(html)
+                console.debug(`<p>${inlineElText}</p>`)
+                this.logs.push({'blockStartIndex':this.startIndex, 'blockEndIndex':this.startIndex, 
+                    'html':((html) ? html : '')+`${(inlineElText) ? '<p>'+inlineElText+'</p>' : ''}`})
+                //this.logs.push({'blockStartIndex':this.startIndex, 'blockEndIndex':this.startIndex, 'html':((html) ? html : '')+`<p>${inlineElText}</p>`})
+                console.debug(this.logs)
+                rangedHtml = ''
+                html = ''
+                inlineElText = el.outerHTML
+                console.debug(inlineElText)
+                screen.innerHTML = ''
+                if (this.#clientBlock() < this.#clientBlockEl(screen)) { throw new Error('段落内にあるHTML要素のうち少なくとも一つが一画面内に収まらないほど大きいです。画面に収まる要素サイズに調整してください。') } // 一要素が一画面に収まらない
+            } else {}
+        }
+        this.tryHtml = `${(html) ? html : ''}<p>${inlineElText}</p>`
+        return this.tryHtml // 次の画面に収まる表示すべきHTMLテキスト
+
+        /*
+        const letterSpanHtmlEl = this.#text2El(blockHtmlEl.innerHTML)
+        //let letterSpanHtmlEl = document.createElement('p')
+        //letterSpanHtmlEl.innerHTML = blockHtml
+        // 最上位親HTML要素pだけを取り除く
+        //if ('p'===letterSpanHtmlEl.tagName.toLowerCase()) {
+        //letterSpanHtmlEl = this.#peelOff(letterSpanHtmlEl)
+        //console.debug(blockHtml.slice(3).slice(0, -4))
+        console.debug(letterSpanHtmlEl)
+        //const letterSpanHtml = this.splitter.split(blockHtml.slice(3).slice(0,-4)) // 先頭と末尾の<p></p>を削除する
+        //const letterSpanHtml = letterSpanHtmlEl.innerHTML
+        const letterSpanHtml = this.splitter.split(letterSpanHtmlEl.innerHTML) // 先頭と末尾の<p></p>を削除する
+        letterSpanHtmlEl.innerHTML = ''
+        letterSpanHtmlEl.innerHTML = letterSpanHtml
+        console.debug(letterSpanHtml)
+        //letterSpanHtmlEl.innerHTML = letterSpanHtml
+        console.debug(letterSpanHtmlEl.outerHTML)
+        console.debug(letterSpanHtmlEl)
+        console.debug(letterSpanHtmlEl.children)
+        console.debug(inlineElText)
+        for (let el of letterSpanHtmlEl.children) {
+            console.debug(el)
+            inlineElText += el.outerHTML
+            console.debug(inlineElText)
+            screen.innerHTML = `${(rangedHtml) ? rangedHtml : ''}<p>${inlineElText}</p>` 
+            console.debug(screen.innerHTML)
+            console.debug(this.#clientBlock(), this.#clientBlockEl(screen), this.#elBlockPos(el), this.#elBlockPos(Array.from(Array.from(screen.children).slice(-1)[0].children).slice(-1)[0]))
+            console.debug(screen.children)
+            console.debug(Array.from(Array.from(screen.children).slice(-1)[0].children).slice(-1)[0])
+            if (this.#isOverScreen(Array.from(Array.from(screen.children).slice(-1)[0].children).slice(-1)[0])) { // 一画面に収まらない
+                console.debug(html)
+                console.debug(`<p>${inlineElText}</p>`)
+                this.logs.push({'blockStartIndex':this.startIndex, 'blockEndIndex':this.startIndex, 
+                    'html':((html) ? html : '')+`${(inlineElText) ? '<p>'+inlineElText+'</p>' : ''}`})
+                //this.logs.push({'blockStartIndex':this.startIndex, 'blockEndIndex':this.startIndex, 'html':((html) ? html : '')+`<p>${inlineElText}</p>`})
+                console.debug(this.logs)
+                rangedHtml = ''
+                html = ''
+                inlineElText = el.outerHTML
+                console.debug(inlineElText)
+                screen.innerHTML = ''
+                if (this.#clientBlock() < this.#clientBlockEl(screen)) { throw new Error('段落内にあるHTML要素のうち少なくとも一つが一画面内に収まらないほど大きいです。画面に収まる要素サイズに調整してください。') } // 一要素が一画面に収まらない
+            } else {}
+        }
+        this.tryHtml = `${(html) ? html : ''}<p>${inlineElText}</p>`
+        return this.tryHtml // 次の画面に収まる表示すべきHTMLテキスト
+        */
+    }
+    #encloseSpan(blockHtmlEl) {
+        let html = ''
+        for (let node of blockHtmlEl.childNodes) { html += this.#encloseNode(node) }
+        console.debug(blockHtmlEl)
+        console.debug(html)
+        console.debug(this.#text2El(html))
+        return this.#text2El(html)
+    }
+    #encloseNode(node) {
+        switch(node.nodeName) {
+            //case '#text': return this.splitter.split(letterSpanHtmlEl.innerHTML)
+            case '#text': return this.splitter.split(node.textContent)
+            default: return node.outerHTML
+        }
+
+    }
     #splitParagraph(rangedHtml, blockHtml) {
         console.debug('#splitParagraph')
         console.debug(rangedHtml)
@@ -302,7 +409,7 @@ class SpanSplitter { // innerHTML内にあるテキストを一字ずつspanで�
         }
         console.debug(html)
         console.debug(elIdxs)
-        console.debug(elIdxs[0])
+        console.debug(this.#join(html, elIdxs))
         return this.#join(html, elIdxs)
     }
     #getName(html, s) {
