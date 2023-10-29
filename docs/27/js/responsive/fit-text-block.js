@@ -158,6 +158,7 @@ class FitInlineElement {
     finish() { this.logs.push({'blockStartIndex':this.startIndex, 'blockEndIndex':-1, 'html':this.tryHtml}); }
     #text2El(html) {
         const el = document.createElement('div')
+        console.debug(html)
         el.innerHTML = html
         return el.firstChild
     }
@@ -262,6 +263,7 @@ class FitInlineElement {
     #encloseSpan(blockHtmlEl) {
         let html = ''
         for (let node of blockHtmlEl.childNodes) { html += this.#encloseNode(node) }
+        html = `<${blockHtmlEl.tagName}>${html}</${blockHtmlEl.tagName}>`
         console.debug(blockHtmlEl)
         console.debug(html)
         console.debug(this.#text2El(html))
