@@ -216,6 +216,7 @@ class FitInlineElement {
     #lastChild(el) { return Array.from(el.children).slice(-1)[0] }
     //#splitChars(rangedHtml, nodeHtmlEl) {
     #splitChars(rangedHtml, node) {
+        let i = 0
         let inlineElText = ''
 //        const letterSpanHtmlEl = this.#encloseSpan(this.#text2El(nodeSpanHtml))
         const letterSpanHtmlEl = this.#text2El(this.#nodeToSpan(node))
@@ -230,15 +231,18 @@ class FitInlineElement {
             inlineElText += el.outerHTML
             this.screen.innerHTML = `${(rangedHtml) ? rangedHtml : ''}<p>${inlineElText}</p>` 
             console.log(this.screen.innerHTML)
-            const lastP = this.#lastChild(this.screen)
-            lastP.appendChild(el)
+//            const lastP = this.#lastChild(this.screen)
+//            lastP.appendChild(el)
             //if (this.#isOverScreen(Array.from(Array.from(screen.children).slice(-1)[0].children).slice(-1)[0])) { // 一画面に収まらない
             const lastSpan = this.#lastChild(this.#lastChild(this.screen))
             console.log(lastSpan)
             if (this.#isOverScreen(lastSpan)) { // 一画面に収まらない
                 console.warn('画面超過！ char Span')
                 inlineElText = lastSpan.outerHTML
-                lastP.removeChild(lastSpan)
+                console.log(inlineElText)
+//                console.log(lastP.innerHTML)
+//                lastP.removeChild(lastSpan)
+//                console.log(lastP.innerHTML)
                 this.logs.push({'blockStartIndex':this.startIndex, 'blockEndIndex':this.startIndex, 'html':this.screen.innerHTML})
                 rangedHtml = ''
                 console.log(inlineElText)
@@ -264,10 +268,11 @@ class FitInlineElement {
                 //if (this.#clientBlock() < this.#clientBlockEl(screen)) { throw new Error('段落内にあるHTML要素のうち少なくとも一つが一画面内に収まらないほど大きいです。画面に収まる要素サイズに調整してください。') } // 一要素が一画面に収まらない
                 */
             } else {
-
+//                lastP.removeChild(lastSpan)
             }
         }
         this.tryHtml = this.screen.innerHTML
+        console.log(this.screen.innerHTML)
 //        this.tryHtml = `${(html) ? html : ''}<p>${inlineElText}</p>`
         return this.tryHtml // 次の画面に収まる表示すべきHTMLテキスト
     }
