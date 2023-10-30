@@ -154,6 +154,26 @@ class FitInlineElement {
         //} else {this.screen.removeChild(blockHtmlEl);this.tryHtml += blockHtml;}
         //} else {this.tryHtml += blockHtml;}
         } else {this.tryHtml += blockHtml;console.log(this.tryHtml);}
+        /*
+        } else {
+            // 見出しなら改段する
+            if (['h1','h2','h3','h4','h5','h6'].some(n=>n===blockHtmlEl.tagName.toLowerCase())) {
+                if (html) {
+                    this.tryHtml = blockHtmlEl.innerHTML
+                    console.log(this.tryHtml)
+                    this.screen.removeChild(blockHtmlEl)
+                    //this.logs.push({'blockStartIndex':this.startIndex, 'blockEndIndex':this.startIndex, 'html':html})
+                    this.logs.push({'blockStartIndex':this.startIndex, 'blockEndIndex':this.startIndex, 'html':this.screen.innerHTML})
+                    console.log(this.screen.innerHTML)
+                } else {
+                    this.tryHtml += blockHtml
+                }
+            } else {
+                this.tryHtml += blockHtml
+            }
+            console.log(this.tryHtml)
+        }
+        */
     }
     finish() { this.logs.push({'blockStartIndex':this.startIndex, 'blockEndIndex':-1, 'html':this.tryHtml}); }
     #text2El(html) {
@@ -186,6 +206,7 @@ class FitInlineElement {
             tryNodeHtml += nodeHtml
             //screen.innerHTML = `${(rangedHtml) ? rangedHtml : ''}<p>${inlineElText}</p>` 
             //screen.innerHTML = `${(rangedHtml) ? rangedHtml : ''}` + (inlineElText) ? `<p>${inlineElText}</p>` : ''
+            console.log(tryNodeHtml)
             console.log(rangedHtml)
             //this.screen.innerHTML = `${(rangedHtml) ? rangedHtml : ''}` + (tryNodeHtml) ? `<p>${tryNodeHtml}</p>` : ''
             this.screen.innerHTML = ((rangedHtml) ? rangedHtml : '') + ((tryNodeHtml) ? `<p>${tryNodeHtml}</p>` : '')
@@ -194,11 +215,35 @@ class FitInlineElement {
             console.log(Array.from(this.screen.children).slice(-1)[0])
             console.log(Array.from(Array.from(this.screen.children).slice(-1)[0].children).slice(-1)[0])
             console.log(this.#lastChild(this.#lastChild(this.screen)))
+//            const lastNode = this.#innerLastNode(node)
+//            console.log(lastNode)
+//            if (this.#isOverScreen(lastNode)) { // 一画面に収まらない
             if (this.#isOverScreen(this.#lastChild(this.#lastChild(this.screen)))) { // 一画面に収まらない
             //if (this.#isOverScreen(Array.from(Array.from(this.screen.children).slice(-1)[0].children).slice(-1)[0])) { // 一画面に収まらない
                 console.warn('画面超過！ Node')
                 //this.#splitChars(rangedHtml + rengedNodeHtml, nodeHtmlEl)
-                this.#splitChars(rangedHtml + rengedNodeHtml, node)
+                //this.#splitChars(rangedHtml + rengedNodeHtml, node)
+                //this.#splitChars(rangedHtml + '<p>'+rengedNodeHtml+'</p>', node)
+                //tryNodeHtml = this.#splitChars(rangedHtml + '<p>'+rengedNodeHtml+'</p>', node)
+                tryNodeHtml = this.#splitChars(rangedHtml + ((rengedNodeHtml) ? '<p>'+rengedNodeHtml+'</p>' : ''), node)
+                tryNodeHtml = tryNodeHtml.replace(/^\<p\>/, '')
+                tryNodeHtml = tryNodeHtml.replace(/\<\/p\>$/, '')
+                console.log(tryNodeHtml)
+                rangedHtml = ''
+                /*
+                this.logs.push({'blockStartIndex':this.startIndex, 'blockEndIndex':this.startIndex, 'html':((rangedHtml) ? rangedHtml : '') + '<p>'+rengedNodeHtml+'</p>'})
+                console.log(this.logs)
+                rangedHtml = ''
+                rengedNodeHtml = ''
+                this.screen.innerHTML = '<p>'+nodeHtml+'</p>'
+                if (this.#isOverScreen(this.#lastChild(this.#lastChild(this.screen)))) { // 一画面に収まらない
+                    this.#splitChars(rangedHtml + '<p>'+rengedNodeHtml+'</p>', node)
+                } else {
+                    rengedNodeHtml = nodeHtml
+                }
+                //tryNodeHtml = nodeHtml
+                tryNodeHtml = ''
+                */
             } else {
                 rengedNodeHtml += nodeHtml
                 this.tryHtml = this.screen.innerHTML
@@ -206,6 +251,12 @@ class FitInlineElement {
         }
         console.log(this.tryHtml)
         return this.tryHtml
+    }
+    #innerLastNode(node) {
+        switch(node.nodeName) {
+            case 'br': return node
+            default: return Array.from(node.children).slice(-1)[0]
+        }
     }
     #createNodeHtml(node) {
         switch(node.nodeName) {
@@ -225,26 +276,41 @@ class FitInlineElement {
         console.log(node)
         console.log(letterSpanHtmlEl)
         console.log(this.#nodeToSpan(node))
+        console.log(this.#text2El(this.#nodeToSpan(node)))
+        console.log(letterSpanHtmlEl)
+        console.log(letterSpanHtmlEl.children)
+//        const lastP = this.#lastChild(this.screen)
         //for (let node of letterSpanHtmlEl.childNodes) {
-        for (let el of letterSpanHtmlEl.children) {
+        //for (let el of letterSpanHtmlEl.children) {
+        const children = Array.from(letterSpanHtmlEl.children)
+        for (let i=0; i<children.length; i++) {
+            const el = children[i]
+            console.log(letterSpanHtmlEl)
             console.log(el.outerHTML)
-            inlineElText += el.outerHTML
-            this.screen.innerHTML = `${(rangedHtml) ? rangedHtml : ''}<p>${inlineElText}</p>` 
+//            inlineElText += el.outerHTML
+//            this.screen.innerHTML = `${(rangedHtml) ? rangedHtml : ''}<p>${inlineElText}</p>` 
             console.log(this.screen.innerHTML)
-//            const lastP = this.#lastChild(this.screen)
-//            lastP.appendChild(el)
+            const lastP = this.#lastChild(this.screen)
+            lastP.appendChild(el)
             //if (this.#isOverScreen(Array.from(Array.from(screen.children).slice(-1)[0].children).slice(-1)[0])) { // 一画面に収まらない
             const lastSpan = this.#lastChild(this.#lastChild(this.screen))
             console.log(lastSpan)
             if (this.#isOverScreen(lastSpan)) { // 一画面に収まらない
                 console.warn('画面超過！ char Span')
-                inlineElText = lastSpan.outerHTML
-                console.log(inlineElText)
+                const lastSpanHtml = lastSpan.outerHTML
+                console.log(lastSpanHtml )
+//                inlineElText = lastSpan.outerHTML
+//                console.log(inlineElText)
 //                console.log(lastP.innerHTML)
 //                lastP.removeChild(lastSpan)
 //                console.log(lastP.innerHTML)
+                console.log(this.screen.innerHTML)
                 this.logs.push({'blockStartIndex':this.startIndex, 'blockEndIndex':this.startIndex, 'html':this.screen.innerHTML})
                 rangedHtml = ''
+                //this.screen.innerHTML = lastSpan.outerHTML
+//                this.screen.innerHTML = '<p>'+lastSpan.outerHTML+'</p>'
+                this.screen.innerHTML = '<p>'+lastSpanHtml+'</p>'
+
                 console.log(inlineElText)
                 console.log(this.screen.innerHTML)
                 // ***********************************************************************
