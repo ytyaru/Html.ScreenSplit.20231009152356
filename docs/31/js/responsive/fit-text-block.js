@@ -205,6 +205,9 @@ class FitInlineElement {
             console.log(Array.from(Array.from(this.screen.children).slice(-1)[0].children).slice(-1)[0])
             console.log(this.#lastChild(this.#lastChild(this.screen)))
             console.log(this.#isOverScreen(this.#lastChild(this.#lastChild(this.screen))))
+            console.log(node)
+            console.log(node.nodeName.toLowerCase())
+            console.log(nodeHtml)
             if (this.#isOverScreen(this.#lastChild(this.#lastChild(this.screen)))) { // 一画面に収まらない
                 console.warn('画面超過！ Node')
                 if ('br'===node.nodeName.toLowerCase()) { // br前のすべてをそのままぶちこんで丁度一画面完了
@@ -213,6 +216,7 @@ class FitInlineElement {
                     tryNodeHtml = ''
                 }
                 else if ('span'===node.nodeName.toLowerCase()) { // span class=word-break前のすべてをそのままぶちこんで丁度一画面完了
+//                else if (['#text','span'].some(n=>n===node.nodeName.toLowerCase())) { // span class=word-break前のすべてをそのままぶちこんで丁度一画面完了
                     this.logs.push({'blockStartIndex':this.startIndex, 'blockEndIndex':this.startIndex, 'html':rangedHtml + ((rengedNodeHtml) ? '<p>'+rengedNodeHtml+'</p>' : '')})
                     rangedHtml = ''
                     tryNodeHtml = node.outerHTML

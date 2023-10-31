@@ -31,10 +31,9 @@ body {
     text-orientation: var(--text-orientation);
     font-family: var(--body-font-family);
     background-color: var(--background-color);
-    word-break: break-all;
-    line-break: strict;
-    /*line-break: loose;*/
-    overflow-wrap: break-word;
+    line-break: strict; /* auto loose normal anywhere */
+    word-break: normal; /*break-all break-word keep-all */
+    overflow-wrap: normal; /* break-word anywhere */
 }
 h1,h2,h3,h4,h5,h6 {
     font-family: var(--title-font-family);
