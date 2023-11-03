@@ -209,26 +209,48 @@ class FitInlineElement {
             console.log(node.nodeName.toLowerCase())
             console.log(nodeHtml)
             if (this.#isOverScreen(this.#lastChild(this.#lastChild(this.screen)))) { // 一画面に収まらない
-                console.warn('画面超過！ Node')
+                console.warn('画面超過！ Node', node.nodeName.toLowerCase(), node, this.#lastChild(this.#lastChild(this.screen)))
                 if ('br'===node.nodeName.toLowerCase()) { // br前のすべてをそのままぶちこんで丁度一画面完了
-                    this.logs.push({'blockStartIndex':this.startIndex, 'blockEndIndex':this.startIndex, 'html':this.screen.innerHTML})
+                    console.log('br:', node, node.nodeName.toLowerCase())
+                    //html = this.#removeBr(this.screen.innerHTML)
+                    html = this.screen.innerHTML
+                    this.logs.push({'blockStartIndex':this.startIndex, 'blockEndIndex':this.startIndex, 'html':html})
+                    //this.logs.push({'blockStartIndex':this.startIndex, 'blockEndIndex':this.startIndex, 'html':this.screen.innerHTML})
                     rangedHtml = ''
                     tryNodeHtml = ''
                 }
                 else if ('span'===node.nodeName.toLowerCase()) { // span class=word-break前のすべてをそのままぶちこんで丁度一画面完了
+                    console.log('span:', node, node.nodeName.toLowerCase())
 //                else if (['#text','span'].some(n=>n===node.nodeName.toLowerCase())) { // span class=word-break前のすべてをそのままぶちこんで丁度一画面完了
-                    this.logs.push({'blockStartIndex':this.startIndex, 'blockEndIndex':this.startIndex, 'html':rangedHtml + ((rengedNodeHtml) ? '<p>'+rengedNodeHtml+'</p>' : '')})
+                    console.log(this.screen.innerHTML)
+                    console.log(rangedHtml)
+                    console.log(rengedNodeHtml)
+                    //html = this.#removeBr(rangedHtml + ((rengedNodeHtml) ? '<p>'+rengedNodeHtml+'</p>' : ''))
+                    //html = rangedHtml + ((rengedNodeHtml) ? '<p>'+rengedNodeHtml+'</p>' : '')
+                    html = rangedHtml + ((rengedNodeHtml) ? '<p>'+rengedNodeHtml.replace(/^\<br\>/g, '').replace(/$\<br\>/g, '')+'</p>' : '')
+                    this.logs.push({'blockStartIndex':this.startIndex, 'blockEndIndex':this.startIndex, 'html':html})
+                    //this.logs.push({'blockStartIndex':this.startIndex, 'blockEndIndex':this.startIndex, 'html':rangedHtml + ((rengedNodeHtml) ? '<p>'+rengedNodeHtml+'</p>' : '')})
                     rangedHtml = ''
                     tryNodeHtml = node.outerHTML
                 }
                 else {
-                    console.log(rangedHtml + ((rengedNodeHtml) ? '<p>'+rengedNodeHtml+'</p>' : ''))
+                    console.log('else:', node, node.nodeName.toLowerCase())
+                    console.log(rangedHtml + ((rengedNodeHtml) ? '<p>'+rengedNodeHtml.replace(/^\<br\>/g, '').replace(/$\<br\>/g, '')+'</p>' : ''))
                     console.log(node)
+                    //html = this.#removeBr(rangedHtml + ((rengedNodeHtml) ? '<p>'+rengedNodeHtml+'</p>' : (0===i) ? `<p></p>`: ''))
+                    html = rangedHtml + ((rengedNodeHtml) ? '<p>'+rengedNodeHtml+'</p>' : (0===i) ? `<p></p>`: '')
+                    rangedHtml = this.#splitChars(html, node)
+                    //rangedHtml = this.#splitChars(rangedHtml + ((rengedNodeHtml) ? '<p>'+rengedNodeHtml+'</p>' : (0===i) ? `<p></p>`: ''), node)
+                    rangedHtml = rangedHtml.replace(/^\<p\>/, '')
+                    rangedHtml = rangedHtml.replace(/\<\/p\>$/, '')
+                    console.log(rangedHtml)
+                    /*
                     tryNodeHtml = this.#splitChars(rangedHtml + ((rengedNodeHtml) ? '<p>'+rengedNodeHtml+'</p>' : (0===i) ? `<p></p>`: ''), node)
                     tryNodeHtml = tryNodeHtml.replace(/^\<p\>/, '')
                     tryNodeHtml = tryNodeHtml.replace(/\<\/p\>$/, '')
                     console.log(tryNodeHtml)
                     rangedHtml = ''
+                    */
                 }
             } else {
                 rengedNodeHtml += nodeHtml
@@ -238,6 +260,15 @@ class FitInlineElement {
         }
         console.log(this.tryHtml)
         return this.tryHtml
+    }
+    #removeBr(html) { // pの先頭や末尾にあるbrを削除する
+        let newHtml = ''
+        newHtml = html.replace('<p><br>', '<p>')
+        while (newHtml !== html) { html = newHtml; newHtml = html.replace('<p><br>', '<p>') }
+        html = newHtml
+        newHtml = html.replace('<br></p>', '</p>')
+        while (newHtml !== html) { html = newHtml; newHtml = html.replace('<p><br>', '<p>') }
+        return newHtml
     }
     #createNodeHtml(node) {
         switch(node.nodeName) {
