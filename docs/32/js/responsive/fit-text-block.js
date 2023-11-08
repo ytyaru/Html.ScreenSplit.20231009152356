@@ -129,7 +129,7 @@ class FitElement {
             children = this.#addElements(children)
             if (!children) { return }
 //            // 一字ずつspanにする
-//            children = children.map(el=>this.spanner.splitLetter(el))
+//            children = children.map(el=>this.spanner.splitLetter(el)).flat()
 //            children = this.#addElements(children)
 //            if (!children) { return }
             // 画面内確定
@@ -197,10 +197,13 @@ class TextNodeSpan {
         if ('span'===el.tagName.toLowerCase())
             if (el.classList.contains('text-node') || 
                 el.classList.contains('sentence') || 
-                el.classList.contains('sentence-after')) { return el.textContent.Graphemes.map(g=>`<span>${g}</span>`) }
+                el.classList.contains('sentence-after')) { return el.textContent.Graphemes.map(g=>this.text2El(`<span>${g}</span>`)) }
+                //el.classList.contains('sentence-after')) { return el.textContent.Graphemes.map(g=>`<span>${g}</span>`) }
                 //el.classList.contains('sentence-after')) { return this.#splitLetter(el.textContent) }
-            else { return el.outerHTML }
-        else { return el.outerHTML }
+            //else { return el.outerHTML }
+            else { return this.text2El(el.outerHTML) }
+        //else { return el.outerHTML }
+        else { return this.text2El(el.outerHTML) }
     }
     #splitSentence(text) {
         console.log('#splitSentence()', text)
