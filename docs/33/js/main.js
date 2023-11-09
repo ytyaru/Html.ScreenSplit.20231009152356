@@ -31,8 +31,8 @@ window.addEventListener('DOMContentLoaded', async(event) => {
 
     performance.mark('TextBlock.load-start')
 //    await TextBlock.load('txt/manuscript.txt')
-//    await TextBlock.load('txt/large.txt')
-    await TextBlock.load('txt/long-paragraph.txt')
+    await TextBlock.load('txt/large.txt')
+//    await TextBlock.load('txt/long-paragraph.txt')
     performance.mark('TextBlock.load-end')
     performance.measure('TextBlock.load', 'TextBlock.load-start', 'TextBlock.load-end')
     console.log(performance.getEntriesByName('TextBlock.load')[0])

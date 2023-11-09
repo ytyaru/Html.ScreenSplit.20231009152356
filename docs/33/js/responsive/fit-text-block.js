@@ -120,6 +120,9 @@ class FitElement {
             console.log(dummyScreen.screen.innerHTML)
             if (isWithin) { return }
             console.log(dummyScreen.screen.innerHTML)
+            // パラグラフ内の子要素をノードや文に細分化して入るか試みる
+            this.#addParagraphInlines(blockEl)
+            /*
             // テキストノードをspanに変換する
             let children = Array.from(blockEl.childNodes).map(n=>this.spanner.node2El(n))
             children = this.#addElements(children)
@@ -141,6 +144,7 @@ class FitElement {
             dummyScreen.clear()
             dummyScreen.addElement(document.createElement('p'))
             this.#addInline(children)
+            */
         } else if (['h1','h2','h3','h4','h5','h6'].some(n=>n===blockEl.tagName.toLowerCase())) {
             // ブロックごと入るか試みる
             let isWithin = dummyScreen.addElement(blockEl)
@@ -155,6 +159,27 @@ class FitElement {
         }
         this.startIndex += 1
     }
+    #addParagraphInlines(p) {
+        const before = dummyScreen.screen.innerHTML
+        dummyScreen.addElement(document.createElement('p'))
+        for (let node of p.childNodes) { // Node単位
+            const el = this.spanner.node2El(node)
+            if (dummyScreen.addInline(el)) { continue }
+            for (let sentence of this.spanner.splitSentence(el)) { // 文単位
+                if (dummyScreen.addInline(el)) { continue }
+                // 画面内確定
+                this.logs.push({'blockStartIndex':this.startIndex, 
+                                'blockEndIndex':this.startIndex, 
+                                'html':dummyScreen.screen.innerHTML})
+                // 次の画面へ持ち越し
+                dummyScreen.clear()
+                dummyScreen.addElement(document.createElement('p'))
+                dummyScreen.addInline(sentence)
+            }
+        }
+        if (before===dummyScreen.screen.innerHTML) { throw new Error('最小単位一つさえ一画面に収まりません。') }
+    }
+    /*
     #addElements(children) {
         for (let i=0; i<children.length; i++) {
             const res = dummyScreen.addElement(children[i])
@@ -178,6 +203,7 @@ class FitElement {
             //if (!res) { throw new Error('一文が長すぎます。一画面内に収まる長さの文に置き換えてください。') }
         }
     }
+    */
 }
 class TextNodeSpan {
     node2El(node) {
@@ -189,48 +215,34 @@ class TextNodeSpan {
     }
     splitSentence(el) {
         console.log('splitSentence()')
-        if ('span'===el.tagName.toLowerCase() && el.classList.contains('text-node')) { return this.#splitSentence(el.textContent) }
-        else { return this.text2El(el.outerHTML) }
-        //else { return el.outerHTML }
+        if ('span'===el.tagName.toLowerCase() && el.classList.contains('text-node')) { return this.#splitSentence(el) }
+        else { return el }
     }
     splitLetter(el) {
         if ('span'===el.tagName.toLowerCase())
             if (el.classList.contains('text-node') || 
                 el.classList.contains('sentence') || 
                 el.classList.contains('sentence-after')) { return el.textContent.Graphemes.map(g=>this.text2El(`<span>${g}</span>`)) }
-                //el.classList.contains('sentence-after')) { return el.textContent.Graphemes.map(g=>`<span>${g}</span>`) }
-                //el.classList.contains('sentence-after')) { return this.#splitLetter(el.textContent) }
-            //else { return el.outerHTML }
-            else { return this.text2El(el.outerHTML) }
-        //else { return el.outerHTML }
-        else { return this.text2El(el.outerHTML) }
+            else { return el }
+        else { return el }
     }
-    #splitSentence(text) {
+    #splitSentence(span) {
+        const text = span.textContent
         console.log('#splitSentence()', text)
         const sentences = []
         const regex = /[。]/g
-//        text.Graphemes.filter(g=>'。'===g)
-//        const periodIdxs = text.Graphemes.map((g, i)=>('。'===g) ? i : -1).filter(i=>(-1 < i && i!==text.Graphemes.length-1))
         const periodIdxs = text.Graphemes.map((g, i)=>('。'===g) ? i : -1).filter(i=>-1 < i)
         if (periodIdxs) {
             let s = 0
             let sentence = null
             for (let idx of periodIdxs) {
-                //sentences.push('<span class="sentence">'+text.Graphemes.slice(s, idx+1)+'</span>')
                 sentences.push('<span class="sentence">'+text.Graphemes.slice(s, idx+1).join('')+'</span>')
                 s = idx+1
             }
-            //if (s < text.Graphemes.length-1) { sentences.push('<span class="sentence-after">'+text.Graphemes.slice(s)+'</span>') }
             if (s < text.Graphemes.length-1) { sentences.push('<span class="sentence-after">'+text.Graphemes.slice(s).join('')+'</span>') }
             console.log(sentences.join(''))
             return sentences.map(s=>this.text2El(s))
-            //return sentences.join('')
-//            const div = document.createElement('div')
-//            div.innerHTML = sentences.join('')
-//            div.classList.add('text-block')
-//            return div
-        //} else { return text }
-        } else { return this.text2El(`<span class="text-node">${text.sanitaize()}</span>`) }
+        } else { return span }
     }
     text2El(html) {
         const el = document.createElement('div')
