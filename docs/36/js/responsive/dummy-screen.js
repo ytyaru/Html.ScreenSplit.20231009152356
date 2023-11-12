@@ -39,8 +39,10 @@ class DummyScreen { // 実際に表示する画面と同じサイズやCSSにす
     isWithin(el=null) { // 最後のパラグラフ内にある最後の要素は画面内にあるか
         el = (el) ? el : this.screen.querySelector('p:last-child > *:last-child')
         const pos = this.#elBlockPos(el)
+//        console.log(this.#clientBlockSize(), this.#elBlockSize(this.screen), pos)
         if (pos < 0) { return false }
-        return (pos <= this.#clientBlockSize())
+        return (pos <= this.#elBlockSize(this.screen))
+        //return (pos <= this.#clientBlockSize())
     }
     #writingMode() { return Css.get('--writing-mode').trim().toLowerCase() }
     #writingModeReverse() { return (this.#isVertical()) ? 'horizontal-tb' : 'vertical-rl' }
@@ -52,5 +54,6 @@ class DummyScreen { // 実際に表示する画面と同じサイズやCSSにす
     #clientHeight() { return document.documentElement.clientHeight }
     #elBlockPos(el) { return el.getBoundingClientRect()[`${(this.#isVertical()) ? 'left' : 'bottom' }`] }
     #elBlockSize(el) { return el.getBoundingClientRect()[`${(this.#isVertical()) ? 'width' : 'height' }`] }
+
 }
 dummyScreen = new DummyScreen()
