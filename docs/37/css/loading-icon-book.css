@@ -1,0 +1,80 @@
+@charset "utf-8";
+/*https://codepen.io/podenemus/pen/eJqwBL*/
+:root {
+    --book-width: var(--font-size); /* 60px */
+    --book-height: var(--font-size); /* 45px */
+    --book-border-width: calc(var(--font-size) / 8); /* 4px */
+    --book-border-style: solid; /* solid */
+    --book-border-color: var(--color); /* #FFFFFF */
+    --page-color: var(--background-color); /* #8455b2,#4b1e77,#663399(background) */
+}
+.loader { margin:0; padding:0; }
+.book {
+  border-width: var(--book-border-width);
+  border-style: var(--book-border-style);
+  border-color: var(--book-border-color);
+  width: var(--book-width);
+  height: var(--book-height);
+  position: relative;
+  perspective: 150px;
+}
+.page {
+  display: block;
+  width: calc(var(--book-width) / 2);
+  height: var(--book-height);
+  border-width: var(--book-border-width);
+  border-style: var(--book-border-style);
+  border-color: var(--book-border-color);
+  border-left-width: 1px; /*1px*/
+  border-left-style: solid; /*solid*/
+  border-left-color: var(--page-color); /*#8455b2*/
+  margin: 0;
+  position: absolute;
+  right: calc(var(--book-border-width) * -1);
+  top: calc(var(--book-border-width) * -1);
+  overflow: hidden;
+  background: var(--page-color); /*#8455b2*/
+  filter: brightness(125%);
+  transform-style: preserve-3d;
+  -webkit-transform-origin: left center;
+  transform-origin: left center;
+}
+.book .page:nth-child(1) {
+  -webkit-animation: pageTurn 1.2s cubic-bezier(0, .39, 1, .68) 1.6s infinite;
+  animation: pageTurn 1.2s cubic-bezier(0, .39, 1, .68) 1.6s infinite;
+}
+.book .page:nth-child(2) {
+  -webkit-animation: pageTurn 1.2s cubic-bezier(0, .39, 1, .68) 1.45s infinite;
+  animation: pageTurn 1.2s cubic-bezier(0, .39, 1, .68) 1.45s infinite;
+}
+.book .page:nth-child(3) {
+  -webkit-animation: pageTurn 1.2s cubic-bezier(0, .39, 1, .68) 1.2s infinite;
+  animation: pageTurn 1.2s cubic-bezier(0, .39, 1, .68) 1.2s infinite;
+}
+/* Page turn */
+@-webkit-keyframes pageTurn {
+  0% {
+    -webkit-transform: rotateY( 0deg);
+    transform: rotateY( 0deg);
+  }
+  20% {
+    filter: brightness(75%);
+  }
+  40% {
+    filter: brightness(100%);
+    -webkit-transform: rotateY( -180deg);
+    transform: rotateY( -180deg);
+  }
+  100% {
+    filter: brightness(100%);
+    -webkit-transform: rotateY( -180deg);
+    transform: rotateY( -180deg);
+  }
+}
+@keyframes pageTurn {
+  0% { transform: rotateY( 0deg); }
+  20% { filter: brightness(75%); }
+  40% { filter: brightness(100%); transform: rotateY( -180deg); }
+  100% { filter: brightness(100%); transform: rotateY( -180deg); }
+}
+
