@@ -7,6 +7,9 @@ class WriteModeButton {
         return this.el
         // <div class="write-mode-button">縦</div>
     }
+    toggle() {
+
+    }
     off() { this.el.style.display = 'none' }
     on() { this.el.style.display = 'block' }
     setTitle(title) { this.on(); this.el.innerHTML = title || '§'; }
