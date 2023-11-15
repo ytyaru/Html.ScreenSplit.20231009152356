@@ -1,14 +1,14 @@
 @charset "utf-8";
 /*https://codepen.io/podenemus/pen/eJqwBL*/
 :root {
-    --book-width: var(--font-size); /* 60px */
-    --book-height: var(--font-size); /* 45px */
     --book-border-width: calc(var(--font-size) / 8); /* 4px */
     --book-border-style: solid; /* solid */
     --book-border-color: var(--color); /* #FFFFFF */
     --page-color: var(--background-color); /* #8455b2,#4b1e77,#663399(background) */
+    --book-width: calc(var(--font-size) - (var(--book-border-width) * 2)); /* 60px */
+    --book-height: calc(var(--font-size) - (var(--book-border-width) * 2)); /* 45px */
 }
-.loader { margin:0; padding:0; }
+.loading-icon { margin:0; padding:0; }
 .book {
   border-width: var(--book-border-width);
   border-style: var(--book-border-style);

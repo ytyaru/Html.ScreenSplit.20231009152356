@@ -74,6 +74,7 @@ h1,h2,h3,h4,h5,h6 {
     justify-content: center;
     align-items: center;
 }
+.splitter > * { padding:max(4px, calc((var(--font-size)*0.75)/4)); }
 footer {
     text-overflow: ellipsis; /* テキスト超過分を…で表示する */
     font-size: max(12px, calc(var(--font-size)*0.75));

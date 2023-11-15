@@ -11,13 +11,15 @@ class Noble { // ノンブル　現在ページを表示する
     }
     #tagClsTxt(tag='div', cls=null, txt=null) {
         const el = document.createElement(tag)
+        console.log(tag, cls, txt)
+        console.log(el)
         if (cls) { for (let c of cls.split(' ')) { el.classList.add(c) } }
         if (txt) { el.textContent = txt }
         return el
     }
     set(now, all) { this.Now = now; this.All = all; }
-    set Now(page) { this.now.textContent = `${page}` }
-    set All(page) { this.all.textContent = `${page}` }
+    set Now(page) { if(this.now) { this.now.textContent = `${page}` } }
+    set All(page) { if(this.all) { this.all.textContent = `${page}` } }
     get Now() { return parseInt(this.now.textContent) }
     get All() { return parseInt(this.all.textContent) }
 //    setNow(page) { this.el.querySelector('.now').textContent = `${page}` }

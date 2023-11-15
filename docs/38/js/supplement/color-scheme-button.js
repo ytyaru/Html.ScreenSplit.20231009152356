@@ -3,6 +3,7 @@ class ColorSchemeButton {
     make() {
         this.el = document.createElement('div')
         this.el.classList.add('color-scheme-button')
+        this.changeSymbol()
         this.#addListener()
         return this.el
         // <div class="color-scheme-button">明</div>

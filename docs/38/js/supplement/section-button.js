@@ -10,4 +10,5 @@ class SectionButton {
     off() { this.el.style.display = 'none' }
     on() { this.el.style.display = 'block' }
     setTitle(title) { this.on(); this.el.innerHTML = title || '§'; }
+//    setTitle(title) { this.on(); this.el.innerHTML = (title || '§') + '　'; }
 }

@@ -1,4 +1,12 @@
 class LayoutScreen {
+    constructor() { this.el=null; this.options=null; this.splitter=new Splitter() }
+    get Noble() { return this.splitter.noble }
+    get Loading() { return this.splitter.loading }
+    get Time() { return this.splitter.time }
+    get Section() { return this.splitter.section }
+    get WritingMode() { return this.splitter.writingMode }
+    get ColorScheme() { return this.splitter.colorScheme }
+    get Setting() { return this.splitter.setting }
     #defaultOptions = { 'auto':true, 'count':0, 'writingMode':'horizontal', 'hasSplitter':true, 'lineEm':40, 'paddingEm':0.5 }
     make(options={}) {
         deepCopy(this.#defaultOptions).then(obj=>{
@@ -55,11 +63,14 @@ class LayoutScreen {
     #hasSplitter() { return this.options.hasSplitter }
     #insertCenterSplitter() {
         if (!this.#hasSplitter()) { return }
+        this.el.querySelector('.inner-screen').insertAdjacentElement('afterend', this.splitter.make())
+        /*
         const splitter = document.createElement('div')
         splitter.classList.add('splitter')
         splitter.textContent = '中央スプリッター　n/N'
         //splitter.innerHTML = `中央スプリッター　1−<span class="text-combine">99</span>`
         this.el.querySelector('.inner-screen').insertAdjacentElement('afterend', splitter)
+        */
     }
     resize() {
         this.#setWritingMode()

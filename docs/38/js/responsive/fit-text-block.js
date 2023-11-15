@@ -64,8 +64,8 @@ class Pager {
         }
     }
     setSplitterText() {
-        layoutScreen.setSplitterText(`中央スプリッター　${this.page+1}/${Math.ceil(this.logs.length/this.#screenCount())}`)
-        layoutScreen.noble.set(this.page+1, Math.ceil(this.logs.length / this.#screenCount())
+        //layoutScreen.setSplitterText(`中央スプリッター　${this.page+1}/${Math.ceil(this.logs.length/this.#screenCount())}`)
+        layoutScreen.Noble.set(this.page+1, Math.ceil(this.logs.length / this.#screenCount()))
     }
 }
 class FitElement {
