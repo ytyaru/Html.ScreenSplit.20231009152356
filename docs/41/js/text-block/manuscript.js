@@ -10,16 +10,21 @@ class Manuscript {
     #splitMatterBlock(txt) {
         this.matter = null
         this.block = txt.trim()
-        const lines = block.split(/\r?\n/)
-        if (Manuscript.#MATTER_FENCE===lines[0]) {
-            const end = lines.slice(1).indexOf(Manuscript.#MATTER_FENCE)
-            this.matter = yaml.load(lines.slice(1, end).join(''))
-            this.block = lines.slice(end+1).join('')
+        const lines = this.block.split(/\r?\n/)
+        if (this.#MATTER_FENCE===lines[0]) {
+            const end = lines.slice(1).indexOf(this.#MATTER_FENCE)
+            const yamlText = lines.slice(1, end).join('\n')
+            console.log(yamlText)
+            //this.matter = jsyaml.load(lines.slice(1, end).join('\n'))
+            this.matter = jsyaml.load(yamlText)
+            console.log(this.matter)
+            this.block = lines.slice(end+2).join('\n')
         }
     }
-    get Frontmatter() { return this.matter }
+    get Meta() { return this.matter }
     *iter(withIndex=false) { yield* this.textBlock.iter(this.block, withIndex) }
-    get isIterd() { return this.textBlock().isIterd() }
+    get isIterd() { return this.textBlock.isIterd }
+    get Blocks() { return this.textBlock.Blocks }
 }
 class TextBlock {
     #lines = null
@@ -28,12 +33,14 @@ class TextBlock {
     #i = 0
     #idx = 0
     #isIterd = false
-
     #text = null
-//    async load(url) { this.#isIterd=false; this.#text = await this.#getTextFromUrl(url); return this.#text; }
-    *iter(text, withIndex=false) { yield* this.#iter(text, withIndex) }
-    get isIterd() { return this.#isIterd }
 
+    get isIterd() { return this.#isIterd }
+    get Blocks() { return this.#blocks }
+
+//    async load(url) { this.#isIterd=false; this.#text = await this.#getTextFromUrl(url); return this.#text; }
+//    *iter(text) { yield* this.#iter(text) }
+    *iter(text, withIndex=false) { yield* this.#iter(text, withIndex) }
     async fromUrl(url) { // : List<String>
         performance.mark('TextBlock.#getTextFromUrl-start')
         const text = await this.#getTextFromUrl(url)

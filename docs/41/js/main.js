@@ -31,14 +31,16 @@ window.addEventListener('DOMContentLoaded', async(event) => {
     performance.mark('TextBlock.load-start')
 //    await TextBlock.load('txt/manuscript.txt')
 //    await TextBlock.load('txt/large.txt')
-    await TextBlock.load('txt/long-paragraph.txt')
+//    await TextBlock.load('txt/long-paragraph.txt')
 //    await TextBlock.load('txt/sanitaize.txt')
+    await manuscript.load('txt/frontmatter.txt')
     performance.mark('TextBlock.load-end')
     performance.measure('TextBlock.load', 'TextBlock.load-start', 'TextBlock.load-end')
     console.log(performance.getEntriesByName('TextBlock.load')[0])
 
     performance.mark('TextBlock.iter-start')
-    for (let block of TextBlock.iter()) {
+    //for (let block of TextBlock.iter()) {
+    for (let block of manuscript.iter()) {
         fitTextBlock.addBlock(block) // 一画面に収まるHTMLテキスト単位にまとめて配列にする
     }
     fitTextBlock.addBlockEnd()

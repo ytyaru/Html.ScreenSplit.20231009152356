@@ -12,7 +12,8 @@ class FitTextBlock {
         this.init()
     }
     addBlock(block) {
-        if (!TextBlock.isIterd) { this.blocks.push(block) }
+        //if (!TextBlock.isIterd) { this.blocks.push(block) }
+        if (!manuscript.isIterd) { this.blocks.push(block) }
         let startIndex = 0
 
         this.fit.addBlock(block)
@@ -76,7 +77,8 @@ class FitElement {
     addBlock(block) {
         console.log(block)
         console.log(dummyScreen.screen.innerHTML)
-        if (!TextBlock.isIterd) { this.blocks.push(block) }
+        //if (!TextBlock.isIterd) { this.blocks.push(block) }
+        if (!manuscript.isIterd) { this.blocks.push(block) }
         const blockHtml = blockParser.parse(block)
         const blockEl = this.spanner.text2El(blockHtml)
         if ('p'===blockEl.tagName.toLowerCase()) {
