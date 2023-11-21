@@ -39,10 +39,20 @@ class DummyScreen { // 実際に表示する画面と同じサイズやCSSにす
     isWithin(el=null) { // 最後のパラグラフ内にある最後の要素は画面内にあるか
         el = (el) ? el : this.screen.querySelector('p:last-child > *:last-child')
         const pos = this.#elBlockPos(el)
-//        console.log(this.#clientBlockSize(), this.#elBlockSize(this.screen), pos)
+        console.log(this.#clientBlockSize(), this.#elBlockSize(this.screen), pos)
         if (pos < 0) { return false }
         return (pos <= this.#elBlockSize(this.screen))
         //return (pos <= this.#clientBlockSize())
+    }
+    isWithinOnce(innerHTML, isClear=false) {
+        if (isClear) { this.clear() }
+        const backup = this.screen.innerHTML
+        this.screen.innerHTML = innerHTML
+        const isWithin = this.isWithin(dummyScreen.screen.querySelector('*:last-child'))
+        console.log(isWithin)
+        this.screen.innerHTML = backup
+        if (!isWithin) { throw new Error('表紙が一画面内に収まりません。テキストを短くする等して一画面内に収まるようにしてください。') }
+        return isWithin
     }
     #writingMode() { return Css.get('--writing-mode').trim().toLowerCase() }
     #writingModeReverse() { return (this.#isVertical()) ? 'horizontal-tb' : 'vertical-rl' }

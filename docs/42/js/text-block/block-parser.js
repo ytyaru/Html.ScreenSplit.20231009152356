@@ -17,6 +17,12 @@ class BlockParser {
         else if (block.startsWith('# ')) { return this.heading.parse(block.slice(2)) } // 見出し
         else { return this.paragraph.parse(block) } // 段落
     }
+    toEl(block) { return this.#text2El(this.parse(block)) }
+    #text2El(html) {
+        const el = document.createElement('div')
+        el.innerHTML = html
+        return el.firstChild
+    }
 }
 class Paragraph { // <p><br><em></em><ruby><rt><rt><rp></rp></ruby>プレーンテキスト</p>
     constructor(ruby, em) { this.ruby = ruby; this.em = em; }

@@ -92,6 +92,6 @@ footer {
 .inner-screen:nth-child(2n) { background-color: #CCFFCC; }
 .inner-screen:nth-child(3n) { background-color: #CCCCFF; }
 a {
-    text-decoration: var(--splitter-text-decoration);
+    text-decoration: var(--text-decoration);
 }
 

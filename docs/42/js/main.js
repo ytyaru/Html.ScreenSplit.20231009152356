@@ -38,6 +38,8 @@ window.addEventListener('DOMContentLoaded', async(event) => {
     performance.measure('TextBlock.load', 'TextBlock.load-start', 'TextBlock.load-end')
     console.log(performance.getEntriesByName('TextBlock.load')[0])
 
+    fitTextBlock.addFrontCover()
+
     performance.mark('TextBlock.iter-start')
     //for (let block of TextBlock.iter()) {
     for (let block of manuscript.iter()) {
