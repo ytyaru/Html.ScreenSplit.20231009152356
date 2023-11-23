@@ -5,6 +5,7 @@ class FitTextBlock {
         this.fit = new FitElement()
         this.clearBlock()
     }
+    get Logs() { return this.logs[this.size] }
     clearBlock() {
         this.addBlockIdx=0; this.startIndex=0; this.logs={}; this.blocks=[]; this.tryHtml='';
         this.size = `${document.documentElement.clientWidth}x${document.documentElement.clientHeight}`
