@@ -1,0 +1,93 @@
+<!--
+https://micromodal.vercel.app/#styling
+-->
+<script src="min.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', async(event) => {
+    MicroModal.init()
+    console.log(MicroModal)
+})
+</script>
+<style>
+.modal { display: none; }
+.modal.is-open { display: block; }
+.modal__overlay {
+ position: fixed;
+ top: 0;
+ left: 0;
+ right: 0;
+ bottom: 0;
+ background: rgba(0,0,0,0.2);
+ display: flex;
+ justify-content: center;
+ align-items: center;
+}
+.modal__container {
+ max-width: 500px;
+ max-height: 100vh;
+ border-radius: 4px;
+ box-sizing: border-box;
+}
+.modal__header {
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+}
+.modal__title {
+ margin-top: 0;
+ margin-bottom: 0;
+ box-sizing: border-box;
+}
+.modal__close {
+ background: transparent;
+ border: 0;
+}
+@keyframes mmfadeIn {
+ from { opacity: 0; }
+ to { opacity: 1; }
+}
+@keyframes mmfadeOut {
+ from { opacity: 1; }
+ to { opacity: 0; }
+}
+@keyframes mmslideIn {
+ from { transform: translateY(15%); }
+ to { transform: translateY(0); }
+}
+@keyframes mmslideOut {
+ from { transform: translateY(0); }
+ to { transform: translateY(-10%); }
+}
+.micromodal-slide[aria-hidden="false"] .modal__overlay {
+ animation: mmfadeIn .3s cubic-bezier(0.0, 0.0, 0.2, 1);
+}
+.micromodal-slide[aria-hidden="false"] .modal__container {
+ animation: mmslideIn .3s cubic-bezier(0, 0, .2, 1);
+}
+.micromodal-slide[aria-hidden="true"] .modal__overlay {
+ animation: mmfadeOut .3s cubic-bezier(0.0, 0.0, 0.2, 1);
+}
+.micromodal-slide[aria-hidden="true"] .modal__container {
+ animation: mmslideOut .3s cubic-bezier(0, 0, .2, 1);
+}
+.micromodal-slide .modal__container,
+.micromodal-slide .modal__overlay {
+ will-change: transform;
+}
+</style>
+
+<button data-micromodal-trigger="modal-1" role="button">Open</button>
+<!-- Modal -->
+<div id="modal-1" class="modal micromodal-slide" aria-hidden="true">
+  <div class="modal__overlay" tabindex="-1" data-micromodal-close>
+    <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="modal-1-title" >
+      <header class="modal__header">
+        <h2 id="modal-1-title">Modal Title</h2>
+        <!--<button aria-label="Close modal" data-micromodal-close>✖</button>-->
+      </header>
+      <main id="modal-1-content" class="modal__content">
+        Modal Content
+      </main>
+    </div>
+  </div>
+</div>
