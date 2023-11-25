@@ -14,7 +14,9 @@ class FitTextBlock {
         this.logs[this.size] = [] // {'blockStartIndex':0, 'blockEndIndex':0, 'html':''}
         this.init()
     }
-    addFrontCover() { cover.make(); console.log(cover.Front); this.logs[this.size].push({'blockStartIndex':-1, 'blockEndIndex':-1, 'html':cover.Front}); console.log(this.logs[this.size]); }
+    //addFrontCover() { cover.make(); console.log(cover.Front); this.logs[this.size].push({'blockStartIndex':-1, 'blockEndIndex':-1, 'html':cover.Front}); console.log(this.logs[this.size]); }
+    addFrontCover() { cover.make(); console.log(cover.Front); this.#addFrontCover() }
+    #addFrontCover() { this.logs[this.size].push({'blockStartIndex':-1, 'blockEndIndex':-1, 'html':cover.Front}); }
     addBlock(block) {
         //if (!TextBlock.isIterd) { this.blocks.push(block) }
         if (!manuscript.isIterd) { this.blocks.push(block) }
@@ -37,6 +39,7 @@ class FitTextBlock {
         this.#setSize()
         if (!this.logs.hasOwnProperty(this.size)) { 
             this.logs[this.size] = []
+            this.#addFrontCover()
             this.init()
             this.fit.resize()
             for (let block of this.blocks) { this.addBlock(block) }
