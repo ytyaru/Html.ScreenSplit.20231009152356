@@ -1,0 +1,41 @@
+<!--
+https://micromodal.vercel.app/#styling
+-->
+<script src="lib/micromodal/0.4.10/min.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', async(event) => {
+    MicroModal.init()
+    console.log(MicroModal)
+})
+</script>
+<style>
+.modal { display: none; }
+.modal.is-open { display: block; }
+.modal__overlay {
+ position: fixed;
+ top: 0;
+ left: 0;
+ right: 0;
+ bottom: 0;
+ background: rgba(0,0,0,0.2);
+ display: flex;
+ justify-content: center;
+ align-items: center;
+}
+</style>
+
+<button data-micromodal-trigger="modal-1" role="button">Open</button>
+<!-- Modal -->
+<div id="modal-1" class="modal micromodal-slide" aria-hidden="true">
+  <div class="modal__overlay" tabindex="-1" data-micromodal-close>
+    <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="modal-1-title" >
+      <header class="modal__header">
+        <h2 id="modal-1-title">Modal Title</h2>
+        <button aria-label="Close modal" data-micromodal-close>✖</button>
+      </header>
+      <main id="modal-1-content" class="modal__content">
+        Modal Content
+      </main>
+    </div>
+  </div>
+</div>

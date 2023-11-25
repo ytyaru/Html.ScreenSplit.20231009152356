@@ -1,0 +1,14 @@
+<script type="text/javascript" src="lib/van-1.2.6.nomodule.min.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', async(event) => {
+    const { div, p, ul, li, a } = van.tags
+    const Hello = () => div(
+      p("👋Hello"),
+      ul(
+        li("🗺️World"),
+        li(a({href: "https://vanjs.org/"}, "🍦VanJS")),
+      ),
+    )
+    van.add(document.body, Hello())
+})
+</script>
