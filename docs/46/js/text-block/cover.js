@@ -42,11 +42,9 @@ class Cover {
     }
     #genres() {
         if (!manuscript.Meta.hasOwnProperty('genres')) { return '' }
+        return GenreList.toHtml(manuscript.Meta.genres)
         //const li = manuscript.Meta.genres.map(g=>`<li>${g}</li>`).join('')
-        //return `<ul class="genres" style="display:flex;">${li}</ul>`
-//        return manuscript.Meta.genres.join(' > ')
-        const li = manuscript.Meta.genres.map(g=>`<li>${g}</li>`).join('')
-        return `<ul class="genres breadcrumb">${li}</ul>`
+        //return `<ul class="genres breadcrumb">${li}</ul>`
     }
     #selfRatings() {
         if (!manuscript.Meta.hasOwnProperty('selfRatings')) { return '' }
@@ -89,5 +87,23 @@ class Cover {
         }
     }
 }
+class GenreList {
+    static toHtml(genres, delimiter='>') {
+        const items = genres.join(`,${delimiter},`).split(',')
+        const spans = items.map((item, i)=>{
+            const style = (0 === (i % 2)) ? '' : `padding-inline:0.5em; display:inline-block; transform:scale(0.75);`
+//            const [style, text] = [((0 === (i % 2))) ? '' : `padding-inline:0.5em; display:inline-block; transform:scale(0.75);`), text]
+            return `<span style="${style}">${item}</span>`
+        })
+        return `<div class="genre-breadcrumb" style="display:flex;">${spans.join('')}</div>`
+    }
+}
+/*
+    const GenreList = (genres, delimiter='>') => {
+        const items = genres.join(`,${delimiter},`).split(',')
+        const spans = items.map((item, i)=>((0 === (i % 2))) ? span(item) : span({style:()=>`padding-inline:0.5em; display:inline-block; transform:scale(0.75);`}, item))
+        return div({class:'genre-breadcrumb', style:'display:flex;'}, spans)
+    }
+*/
 window.cover = new Cover()
 })()
