@@ -1,0 +1,35 @@
+<style>
+body { writing-mode:vertical-rl; text-orientation:upright; /*mixed*/ }
+.breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  list-style: none;
+  padding:0; margin:0;
+}
+.breadcrumb li { display:inline-block; margin:0.5em;}
+.breadcrumb li:not(:last-of-type)::after {
+  /*content: "›";*/
+  /*content: "v";*/
+  content: "∨";
+  /*content: ">";*/
+  /*
+  display: inline-block;
+  transform: rotate(0deg) scale(0.5);
+  */
+  margin: 0.5em;
+}
+.flexs {
+  display: flex;
+  flex-wrap: wrap;
+  list-style: none;
+  padding:0; margin:0;
+}
+.flexs li:not(:last-of-type)::after {
+  content: "　";
+}
+</style>
+<ul class="breadcrumb">
+<li>A</li>
+<li>B</li>
+<li>C</li>
+</ul>

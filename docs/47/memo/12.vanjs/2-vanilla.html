@@ -1,0 +1,13 @@
+<script>
+window.addEventListener('DOMContentLoaded', async(event) => {
+    const { div, span, p, ul, li, a, button } = van.tags
+    const div = document.createElement('div')
+    const button = document.createElement('button')
+    const p = document.createElement('p')
+    p.textContent = '0'
+    button.textContent = 'count'
+    button.addEventListener('click', async(e) => { p.textContent = parseInt(p.textContent)+1 })
+    div.appendChild(button)
+    document.querySelector('body').appendChild(div)
+})
+</script>

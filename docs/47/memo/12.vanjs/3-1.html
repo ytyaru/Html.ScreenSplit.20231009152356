@@ -1,0 +1,17 @@
+<script type="text/javascript" src="lib/van-1.2.6.nomodule.min.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', async(event) => {
+    const { h1, div, span, p, ul, li, a, button } = van.tags
+    const Counter = () => {
+        const count = van.state(0)
+        const color = van.derive(()=>((0 < count.val && 0 === count.val % 3 || `${count.val}`.includes('3')) ? 'red' : 'black'))
+        return div(
+            h1('３の倍数と３がつくときだけ赤になる'),
+            button({type:'button', onclick:()=>++count.val}, 'count'),
+//            p({style:`color:${color.val};`}, count), // 黒のまま変わらず…
+            ()=>p({style:`color:${color.val};`}, count), // 関数で返せば動的変更できる
+        )
+    }
+    van.add(document.body, Counter())
+})
+</script>
