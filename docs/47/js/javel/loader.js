@@ -95,6 +95,7 @@ const InnerScreen = () => {
 }
 class Viewer {
     constructor() {
+        this.ID = 'javel-viewer'
         this.blockSize = van.state(0)
         this.inlineSize = van.state(0)
         this.columnCount = van.state(0)
@@ -108,7 +109,19 @@ class Viewer {
         this._page = new Page()
     }
     get page() { return this._page }
-    dom() { return () => div({class:'screen'}, InnerScreen()) }
+    #dom() { return () => div({id:this.ID, class:'screen'}, InnerScreen()) }
+    init() {
+        if (document.querySelector(this.ID)) { return }
+        van.add(document.body, this.#dom())
+        //van.add(document.body, javel.lib.viewer.dom())
+        window.addEventListener("keyup", (e) => {
+            console.log(e.key)
+            switch(e.key) {
+                case 'n': { console.log('n:', javel.lib.viewer.page.now.val); return ++javel.lib.viewer.page.now.val }
+                case 'p': { console.log('p:', javel.lib.viewer.page.now.val); return --javel.lib.viewer.page.now.val }
+            }
+        });
+    }
 }
 //const Viewer = () => { return div({class:'screen'}, InnerScreen()) }
 window.javel = window.javel || {}
@@ -119,11 +132,4 @@ window.javel.lib.loader = new Loader()
 //window.javel.lib.viewer = window.javel.lib.viewer || Viewer
 window.javel.lib.viewer = window.javel.lib.viewer || new Viewer()
 window.javel.lib.page = window.javel.lib.page || new Page()
-window.addEventListener("keyup", (e) => {
-    console.log(e.key)
-    switch(e.key) {
-        case 'n': { console.log('n:', javel.lib.viewer.page.now.val); return ++javel.lib.viewer.page.now.val }
-        case 'p': { console.log('p:', javel.lib.viewer.page.now.val); return --javel.lib.viewer.page.now.val }
-    }
-});
 })();

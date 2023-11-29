@@ -6,8 +6,10 @@ window.addEventListener('DOMContentLoaded', async(event) => {
     console.log(window.javel)
     console.log(javel)
     console.log(javel.lib.manuscript)
+    javel.lib.viewer.init()
     javel.lib.manuscript.text.val = 'これが原稿です。'
-    van.add(document.body, javel.lib.viewer.dom())
+//    javel.lib.manuscript.text.val = 'これが原稿です。'
+//    van.add(document.body, javel.lib.viewer.dom())
 })
 </script>
 </head>
