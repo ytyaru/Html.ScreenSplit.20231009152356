@@ -1,0 +1,14 @@
+<script type="text/javascript" src="lib/van-1.2.6.nomodule.min.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', async(event) => {
+    const { div, span, p, ul, li, a, button } = van.tags
+    const Counter = () => {
+        const count = van.state(0)
+        return div(
+            button({type:'button', onclick:()=>++count.val}, 'count'),
+            p(count)
+        )
+    }
+    van.add(document.body, Counter())
+})
+</script>
