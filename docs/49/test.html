@@ -1,0 +1,26 @@
+<head>
+<script src="lib/van/1.2.6/nomodule.min.js"></script>
+<script src="lib/van-x/0.1.3/nomodule.min.js"></script>
+<script src="js/util/string/case.js"></script>
+<script src="js/util/string/length.js"></script>
+<script src="js/javel/app.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', async(event) => {
+    console.log(window.javel)
+    console.log(javel)
+    console.log(javel.lib.manuscript)
+    javel.viewer.init()
+    javel.lib.manuscript.text = `# 原稿
+
+　これは原稿です。`
+//    javel.viewer.manuscript.text = 'これが原稿です。'
+//    javel.lib.viewer.init()
+//    javel.lib.manuscript.text.val = 'これが原稿です。'
+//    javel.lib.manuscript.text.val = 'これが原稿です。'
+//    van.add(document.body, javel.lib.viewer.dom())
+})
+</script>
+</head>
+
+<body></body>
+

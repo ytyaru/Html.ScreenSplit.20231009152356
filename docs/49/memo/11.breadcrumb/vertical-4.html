@@ -1,0 +1,42 @@
+<style>
+:root {
+  --breadcrumb-content:">"; /* 〈〉❬❭❮❯❰❱ ⏴⏵⏶⏷ *☡☰☸ */
+  --breadcrumb-content-rotate:90deg;
+  --breadcrumb-content-scale:0.75;
+}
+body { writing-mode:vertical-rl; text-orientation:upright; /*mixed*/ }
+.breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  list-style: none;
+  padding:0; margin:0;
+}
+.breadcrumb li { display:inline-block; margin:0; padding:0; }
+.breadcrumb li:not(:last-of-type)::after {
+  /*content: ">";*/ /* 〈〉❬❭❮❯❰❱ ⏴⏵⏶⏷ *☡☰☸ */
+  content: var(--breadcrumb-content); /* 〈〉❬❭❮❯❰❱ ⏴⏵⏶⏷ *☡☰☸ */
+  display: inline-block; /* transformはblock要素のみ対象なのでこれが必要。でも最後の要素の位置がズレる… */
+  transform: rotate(var(--breadcrumb-content-rotate)) scale(var(--breadcrumb-content-scale));
+  /*transform: rotate(90deg) scale(0.75);*/
+  margin:0; padding:0;
+}
+.breadcrumb li:last-of-type::after {
+  content: "　"; /* ここに文字を入れると位置が整う。なぜ？ */
+  display: inline-block; /* transformはblock要素のみ対象なのでこれが必要。でも最後の要素の位置がズレる… */
+  margin:0; padding:0;
+}
+.flexs {
+  display: flex;
+  flex-wrap: wrap;
+  list-style: none;
+  padding:0; margin:0;
+}
+.flexs li:not(:last-of-type)::after {
+  content: "　";
+}
+</style>
+<ul class="breadcrumb">
+<li>A</li>
+<li>B</li>
+<li>C</li>
+</ul>
