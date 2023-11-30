@@ -80,23 +80,13 @@ window.addEventListener('DOMContentLoaded', async(event) => {
             }},
             ()=>(('horizontal-tb'===writingMode.val) ? '横' : '縦')
         ),
-        //div({id:'viewr', style:()=>`writing-mode:${writingMode.val};box-sizing:border-box;`}, ()=>div(htmls.val))
         div({id:'html-viewer', style:()=>`writing-mode:${writingMode.val};box-sizing:border-box;overflow-x:${viewerOverflowX.val};overflow-y:${viewerOverflowY.val};`,
             onwheel:(e)=>{
                 if ('vertical-rl'===writingMode.val) {
                     if (Math.abs(e.deltaY) < Math.abs(e.deltaX)) return;
-                    //const target = document.querySelector('#html-viewer')
-                    //console.log('wheel:', e.deltaY, e.target.scrollLeft, e.target)
-                    console.log('wheel:', e.deltaY, target.scrollLeft, target)
-                    e.target.scrollLeft += e.deltaY;
-                    //target.scrollLeft += e.deltaY;
-                    //target.scrollLeft += 10;
-                    //target.scrollLeft = 100;
-                    //target.scrollBy(0, 100);
-                    //target.scrollTo(100, 100);
+                    const target = document.querySelector('#html-viewer')
+                    target.scrollLeft += e.deltaY;
                     e.preventDefault();
-                    //console.log('wheel:', e.target.scrollLeft, target)
-                    console.log('wheel:', target.scrollLeft)
                 }
             }}, 
             ()=>div(htmls.val))
